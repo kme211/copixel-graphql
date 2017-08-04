@@ -1,0 +1,31 @@
+{
+  "name": "copixel-server",
+  "version": "1.0.0",
+  "description": "Express/GraphQL backend for copixel",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon ./server.js --exec babel-node -e js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.24.0",
+    "babel-preset-es2015": "^6.24.0",
+    "babel-preset-stage-0": "^6.22.0",
+    "nodemon": "^1.11.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "cors": "^2.8.3",
+    "cuid": "^1.3.8",
+    "express": "^4.15.2",
+    "graphql": "^0.10.5",
+    "graphql-server-core": "^1.0.2",
+    "graphql-server-express": "^1.0.5",
+    "graphql-server-module-graphiql": "^1.0.5",
+    "graphql-subscriptions": "^0.4.4",
+    "graphql-tools": "^1.1.0",
+    "subscriptions-transport-ws": "^0.8.2"
+  }
+}

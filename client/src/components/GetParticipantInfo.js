@@ -2,24 +2,8 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import Input from "./Input";
 import SubmitButton from "./SubmitButton";
-
-const Cover = styled.div`
-  position: fixed;
-  top: 0; 
-  left: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 5;
-`;
-
-const Body = styled.div`
-  background: white;
-  padding: 1em;
-`;
+import Cover from "./ModalCover";
+import Body from "./ModalBody";
 
 const Header = styled.h2`
   font-size: 2em;

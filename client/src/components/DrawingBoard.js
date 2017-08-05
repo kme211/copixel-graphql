@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import Icon from "./Icon";
 import Cell from "./DrawingBoardCell";
 
 function isNeighboringSection(currentX, currentY) {

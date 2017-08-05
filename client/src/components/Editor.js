@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
 import generatePixels from "../utils/generatePixels";
-import Inner from "./Inner";
 import Button from "./Button";
 import GridBackground from "./GridBackground";
 import InteractiveCanvas from "./InteractiveCanvas";

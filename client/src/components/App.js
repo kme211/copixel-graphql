@@ -6,6 +6,7 @@ import AddDrawing from "./AddDrawing";
 import NotFound from "./NotFound";
 import DrawingDetails from "./DrawingDetails";
 import Inner from "./Inner";
+import Header from "./Header";
 import {
   ApolloClient,
   ApolloProvider,
@@ -70,21 +71,26 @@ const Wrapper = styled.div`
   }
 `;
 
+const Content = styled.div`
+  padding: 1rem 0;
+`;
+
 class App extends Component {
   render() {
     return (
       <ApolloProvider client={client}>
         <BrowserRouter>
           <Wrapper>
-            <Link to="/">copixel</Link>
-            <Link to="/add">add</Link>
+            <Header/>
             <Inner>
-            <Switch>
-              <Route exact path="/" component={DrawingsListWithData} />
-              <Route path="/add" component={AddDrawing} />
-              <Route path="/drawing/:drawingId" component={DrawingDetails} />
-              <Route component={NotFound} />
-            </Switch>
+              <Content>
+                <Switch>
+                  <Route exact path="/" component={DrawingsListWithData} />
+                  <Route path="/add" component={AddDrawing} />
+                  <Route path="/drawing/:drawingId" component={DrawingDetails} />
+                  <Route component={NotFound} />
+                </Switch>
+              </Content>
             </Inner>
           </Wrapper>
         </BrowserRouter>

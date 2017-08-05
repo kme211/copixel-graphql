@@ -1,13 +1,6 @@
 import React, { Component } from "react";
-import styled from "styled-components";
 import { graphql, gql, compose } from "react-apollo";
-import Cover from "./Cover";
 import Editor from "./Editor";
-
-const Body = styled.div`
-  background: white;
-  padding: 1em;
-`;
 
 class SectionOverlay extends Component {
   state = {
@@ -35,8 +28,7 @@ class SectionOverlay extends Component {
     if (error) return <div>GraphQL Error: {error.message}</div>;
     console.log("SectionOverlay data", this.props.data);
     return (
-      <Cover>
-        <Body>
+      <div>
           <Editor
             neighbors={neighbors}
             x={section.x}
@@ -45,8 +37,7 @@ class SectionOverlay extends Component {
             pixelSize={this.props.pixelSize}
             savePixels={this.savePixels}
           />
-        </Body>
-      </Cover>
+      </div>
     );
   }
 }

@@ -6,6 +6,8 @@ import NotFound from "./NotFound";
 import GetParticipantInfo from "./GetParticipantInfo";
 import DrawingBoard from "./DrawingBoard";
 import SectionOverlay from "./SectionOverlay";
+import Cover from "./ModalCover";
+import Body from "./ModalBody";
 import { gql, graphql, compose } from "react-apollo";
 
 const Chat = styled.div`
@@ -137,6 +139,8 @@ class DrawingDetails extends Component {
           />
         </Chat>
         {this.state.currentSection &&
+          <Cover>
+            <Body>
           <SectionOverlay
             creator={this.state.participant.name}
             section={this.state.currentSection}
@@ -144,7 +148,9 @@ class DrawingDetails extends Component {
             pixelSize={drawing.pixelSize}
             drawingId={match.params.drawingId}
             onSectionSave={this.onSectionSave}
-          />}
+          />
+            </Body>
+          </Cover>}
       </div>
     );
   }

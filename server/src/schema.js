@@ -14,8 +14,16 @@ type Drawing {
   public: Boolean!
   pixelSize: Int!
   sectionSizePx: Int!
+  created: String
   sections: [Section]
   messages: [Message]!
+}
+
+input DrawingInput {
+  name: String!
+  width: Int!
+  height: Int!
+  public: Boolean!
 }
 
 input MessageInput{
@@ -81,7 +89,7 @@ type Query {
 
 # The mutation root type, used to define all mutations
 type Mutation {
-  addDrawing(name: String!, width: Int!, height: Int!, public: Boolean!, pixelSize: Int = 1): Drawing
+  addDrawing(drawing: DrawingInput!): Drawing
   addMessage(message: MessageInput!): Message
   addSection(section: SectionInput!): Section
   addPixelsToSection(drawingId: ID!, sectionId: ID!, pixels: [PixelInput!]!): Section

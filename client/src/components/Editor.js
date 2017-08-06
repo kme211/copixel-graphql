@@ -25,17 +25,17 @@ const canvasContainerStyles = ({
   overflow: hidden;
   width: ${width}px;
   height: ${height}px;
-  border: 1px solid #c8ccce; 
 `;
 
 const CanvasContainer = styled.div`${canvasContainerStyles}`;
 
 const containerStyles = ({ width, height }) => css`
   position: relative;
-  width: ${width}px;
-  height: ${height}px;
+  width: ${width + 2}px;
+  height: ${height + 2}px;
   margin: 0 auto;
   box-shadow: 6px 0px 15px -6px rgba(50, 50, 50, 0.25), -6px 0px 15px -6px rgba(50, 50, 50, 0.25);
+  border: 1px solid #c8ccce; 
 `;
 
 const Container = styled.div`${containerStyles}`;
@@ -129,13 +129,13 @@ class Editor extends Component {
     } = this.state;
 
     const { neighbors, x, y, pixelSize, sectionSizePx } = this.props;
-
-    const topNeighbor = neighbors.find(n => n.relativePostition === "TOP");
-    const rightNeighbor = neighbors.find(n => n.relativePostition === "RIGHT");
+    console.log('editor', neighbors, x, y, pixelSize, sectionSizePx)
+    const topNeighbor = neighbors.find(n => n.relativePosition === "TOP");
+    const rightNeighbor = neighbors.find(n => n.relativePosition === "RIGHT");
     const bottomNeighbor = neighbors.find(
-      n => n.relativePostition === "BOTTOM"
+      n => n.relativePosition === "BOTTOM"
     );
-    const leftNeighbor = neighbors.find(n => n.relativePostition === "LEFT");
+    const leftNeighbor = neighbors.find(n => n.relativePosition === "LEFT");
 
     return (
       <div>
@@ -184,6 +184,8 @@ class Editor extends Component {
                   />}
               </CanvasContainer>
               <Neighbors
+                sectionSizePx={this.props.sectionSizePx}
+                pixelSize={this.props.pixelSize}
                 top={topNeighbor}
                 right={rightNeighbor}
                 bottom={bottomNeighbor}

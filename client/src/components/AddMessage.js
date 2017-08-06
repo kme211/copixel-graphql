@@ -19,7 +19,7 @@ const AddMessage = ({ mutate, match, participant }) => {
         optimisticResponse: {
           addMessage: {
             text: evt.target.value,
-            participant: participant.name,
+            author: participant.name,
             id: Math.round(Math.random() * -1000000),
             __typename: 'Message',
           },
@@ -68,6 +68,7 @@ const addMessageMutation = gql`
     addMessage(message: $message) {
       id
       text
+      author
     }
   }
 `;

@@ -4,7 +4,7 @@ import Inner from "./Inner";
 import Input from "./Input";
 import SubmitButton from "./SubmitButton";
 import Toggle from "./Toggle";
-import { drawingsListQuery } from "./DrawingsListWithData";
+import { withRouter } from 'react-router';
 
 class AddDrawing extends Component {
   state = {
@@ -26,25 +26,16 @@ class AddDrawing extends Component {
   onFormSubmit = e => {
     e.preventDefault();
     this.props.mutate({
-      variables: { name: this.state.name },
-      optimisticResponse: {
-        addDrawing: {
-          name: this.state.name,
-          width: +this.state.width,
-          height: +this.state.height,
-          public: this.state.public,
-          id: Math.round(Math.random() * -1000000),
-          __typename: "Drawing"
-        }
-      },
-      update: (store, { data: { addDrawing } }) => {
-        // Read the data from the cache for this query.
-        const data = store.readQuery({ query: drawingsListQuery });
-        // Add our drawing from the mutation to the end.
-        data.drawings.push(addDrawing);
-        // Write the data back to the cache.
-        store.writeQuery({ query: drawingsListQuery, data });
-      }
+      variables: { 
+        drawing: {
+        name: this.state.name,
+        width: this.state.width,
+        height: this.state.height,
+        public: this.state.public
+      } 
+    }
+    }).then(({ data: {addDrawing}}) => {
+      this.props.history.push(`/drawing/${addDrawing.id}`);
     });
   };
 
@@ -99,14 +90,15 @@ class AddDrawing extends Component {
 }
 
 const addDrawingMutation = gql`
-  mutation addDrawing($name: String!) {
-    addDrawing(name: $name) {
+  mutation addDrawing($drawing: DrawingInput!) {
+    addDrawing(drawing: $drawing) {
       id
       name
+      created
     }
   }
 `;
 
-const AddDrawingWithMutation = graphql(addDrawingMutation)(AddDrawing);
+const AddDrawingWithMutation = graphql(addDrawingMutation)(withRouter(AddDrawing));
 
 export default AddDrawingWithMutation;

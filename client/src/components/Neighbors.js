@@ -1,7 +1,9 @@
 import React from "react";
 import Neighbor from "./Neighbor";
+import PropTypes from 'prop-types';
 
 const Neighbors = ({ onClick, centerX, centerY, top, right, bottom, left, pixelSize, sectionSizePx }) => {
+  console.log('neigbors', top, right, left, bottom, pixelSize, sectionSizePx)
   return (
   <div>
     {top &&
@@ -12,7 +14,7 @@ const Neighbors = ({ onClick, centerX, centerY, top, right, bottom, left, pixelS
         width={sectionSizePx}
         height={pixelSize}
         direction="row"
-        data={top}
+        data={top.pixels}
       />}
     {right &&
       <Neighbor
@@ -22,7 +24,7 @@ const Neighbors = ({ onClick, centerX, centerY, top, right, bottom, left, pixelS
         width={pixelSize}
         height={sectionSizePx}
         direction="column"
-        data={right}
+        data={right.pixels}
       />}
     {bottom &&
       <Neighbor
@@ -32,7 +34,7 @@ const Neighbors = ({ onClick, centerX, centerY, top, right, bottom, left, pixelS
         width={sectionSizePx}
         height={pixelSize}
         direction="row"
-        data={bottom}
+        data={bottom.pixels}
       />}
     {left &&
       <Neighbor
@@ -42,10 +44,22 @@ const Neighbors = ({ onClick, centerX, centerY, top, right, bottom, left, pixelS
         width={pixelSize}
         height={sectionSizePx}
         direction="column"
-        data={left}
+        data={left.pixels}
       />}
   </div>
 ) 
 };
+
+Neighbors.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  centerX: PropTypes.number.isRequired,
+  centerY: PropTypes.number.isRequired,
+  top: PropTypes.object,
+  right: PropTypes.object,
+  bottom: PropTypes.object,
+  left: PropTypes.object,
+  pixelSize: PropTypes.number.isRequired,
+  sectionSizePx: PropTypes.number.isRequired,
+}
 
 export default Neighbors;

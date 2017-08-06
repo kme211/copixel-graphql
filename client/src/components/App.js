@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import styled from "styled-components";
 import DrawingsListWithData from "./DrawingsListWithData";
 import AddDrawing from "./AddDrawing";
@@ -63,11 +63,16 @@ const client = new ApolloClient({
 });
 
 const Wrapper = styled.div`
-  font-family: Helvetica, sans-serif;
+  font-family: sans-serif;
   font-size: 16px;
   *,
   & {
     box-sizing: border-box;
+  }
+
+  .mono {
+    font-family: 'VT323', monospace;
+    font-size: 1.25rem;
   }
 `;
 

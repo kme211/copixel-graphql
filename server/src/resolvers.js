@@ -10,6 +10,7 @@ const drawings = [
     pixelSize: 10,
     sectionSizePx: 300,
     public: true,
+    created: "Sat Aug 05 2017 14:09:33 GMT-0500 (CDT)",
     sections: [
       {
         x: 0,
@@ -62,6 +63,8 @@ const drawings = [
     pixelSize: 1,
     sectionSizePx: 2,
     public: true,
+    created: "Fri Aug 04 2017 14:09:33 GMT-0500 (CDT)",
+    sections: [],
     messages: [
       {
         id: "3",
@@ -87,13 +90,14 @@ const pubsub = new PubSub();
 export const resolvers = {
   Query: {
     drawings: () => {
+      console.log('Query drawings')
       return drawings;
     },
     drawing: (root, { id }) => {
       return drawings.find(drawing => drawing.id === id);
     },
     neighbors: (root, { drawingId, sectionX, sectionY }) => {
-      console.log("getSectionNeighbors");
+      console.log("getSectionNeighbors", sectionX, sectionY);
       const drawing = drawings.find(drawing => drawing.id === drawingId);
       if (!drawing) throw new Error("Drawing does not exist");
 
@@ -110,31 +114,33 @@ export const resolvers = {
         s => s.x === sectionX && s.y === sectionY + 1
       );
 
-      const lastRowOrColNum = drawing.sectionSizePx / drawing.pixelSize - 1;
-
       const results = [
         {
           neighbor: leftNeighbor,
-          axis: "y",
-          axisCoord: 0,
+          filter: (pixel) => {
+            return pixel.x === ((sectionX - 1) * drawing.sectionSizePx) + (drawing.sectionSizePx - drawing.pixelSize);
+          },
           relativePosition: "LEFT"
         },
         {
           neighbor: rightNeighbor,
-          axis: "y",
-          axisCoord: lastRowOrColNum,
+          filter: (pixel) => {
+            return pixel.x === ((sectionX - 1) * drawing.sectionSizePx);
+          },
           relativePosition: "RIGHT"
         },
         {
           neighbor: topNeighbor,
-          axis: "x",
-          axisCoord: lastRowOrColNum,
+          filter: (pixel) => {
+            return pixel.x === ((sectionY - 1) * drawing.sectionSizePx) + (drawing.sectionSizePx - drawing.pixelSize);
+          },
           relativePosition: "TOP"
         },
         {
           neighbor: bottomNeighbor,
-          axis: "x",
-          axisCoord: 0,
+          filter: (pixel) => {
+            return pixel.y === ((sectionX + 1) * drawing.sectionSizePx);
+          },
           relativePosition: "BOTTOM"
         }
       ];
@@ -148,7 +154,7 @@ export const resolvers = {
             x: result.neighbor.x,
             y: result.neighbor.y,
             relativePosition: result.relativePosition,
-            pixels: result.neighbor.pixels.filter(p => p[axis] === axisCoord)
+            pixels: result.neighbor.pixels.filter(result.filter)
           };
           neighbors.push(neighbor);
         }
@@ -158,13 +164,20 @@ export const resolvers = {
     }
   },
   Mutation: {
-    addDrawing: (root, args) => {
+    addDrawing: (root, { drawing }) => {
+      console.log('addDrawing', drawing)
       const newDrawing = {
         id: String(nextId++),
         messages: [],
-        name: args.name
+        sections: [],
+        width: drawing.width,
+        height: drawing.height,
+        pixelSize: 10,
+        sectionSizePx: 300,
+        name: drawing.name,
+        created: String(new Date())
       };
-      drawings.push(newDrawing);
+      drawings.unshift(newDrawing);
       return newDrawing;
     },
     addMessage: (root, { message }) => {

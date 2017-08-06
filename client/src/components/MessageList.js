@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import AddMessage from "./AddMessage";
+import ScrollArea from "react-scrollbar";
 
 const Message = styled.div`
   padding: 0.25em;
@@ -12,10 +13,25 @@ const Author = styled.div`
   font-weight: 600;
 `;
 
+const Messages = styled.div`
+  height: 39vh;
+  overflow: auto;
+`;
+
+const Wrapper = styled.div`
+  width: 100%;
+`;
+
 const MessageList = ({ messages, participant }) => {
   return (
-    <div>
-      <h2>Chat</h2>
+    <Wrapper>
+      <Messages>
+        <ScrollArea
+            speed={0.8}
+            className="area"
+            contentClassName="content"
+            horizontal={false}
+            >
       {messages.map(message => (
         <Message
           key={message.id}
@@ -25,8 +41,10 @@ const MessageList = ({ messages, participant }) => {
           <div>{message.text}</div>
         </Message>
       ))}
+      </ScrollArea>
+      </Messages>
       <AddMessage participant={participant} />
-    </div>
+    </Wrapper>
   );
 };
 export default MessageList;

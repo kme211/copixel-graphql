@@ -1,8 +1,9 @@
 import React from "react";
 import styled, { css } from "styled-components";
 import { BACKGROUNDS } from "../constants";
+import PropTypes from 'prop-types';
 
-const styles = ({ top, right, bottom, left, width, height, background, direction }) => css`
+const styles = ({ top, right, bottom, left, border, width, height, background, direction }) => css`
   position: absolute;
   ${top && `top: ${top};`}
   ${right && `right: ${right};`}
@@ -26,17 +27,25 @@ const pixelStyles = ({ color }) => css`
 const Pixel = styled.div`${pixelStyles}`;
 
 const Neighbor = ({ onClick, centerX, centerY, data, ...props }) => {
+  console.log('neigbor', data)
   return (
     <Wrapper
       {...props}
       background={data ? "transparent" : BACKGROUNDS.blankNeighbor}
     >
       {data &&
-        data.map(color => (
-          <Pixel color={color} onClick={onClick} data-color={color} />
+        data.map((pixel, index) => (
+          <Pixel key={`px_${index}`} color={pixel.color} onClick={onClick} data-color={pixel.color} />
         ))}
     </Wrapper>
   );
 };
+
+Neighbor.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  centerX: PropTypes.number.isRequired,
+  centerY: PropTypes.number.isRequired,
+  data: PropTypes.array.isRequired
+}
 
 export default Neighbor;

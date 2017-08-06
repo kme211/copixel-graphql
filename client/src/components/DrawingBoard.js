@@ -43,14 +43,11 @@ class DrawingBoard extends Component {
           isNeighboringSection(x, y)
         );
         const status = section ? section.status : "NOT_STARTED";
-        const enabled = status === "NOT_STARTED"
+        let enabled = status === "NOT_STARTED"
           ? neighboringSections.length &&
               neighboringSections.every(s => s.status === "COMPLETED")
           : false;
-
-        console.log(
-          `x: ${x}, y: ${y}, is status: ${status}, is enabled: ${enabled}`
-        );
+        if(!this.props.sections.length) enabled = true;
 
         const cell = (
           <Cell

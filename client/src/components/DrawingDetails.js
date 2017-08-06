@@ -94,7 +94,6 @@ class DrawingDetails extends Component {
         }
       }
     });
-    console.log('sectionId', addSection.id)
     this.setState({ currentSection: { x, y, id: addSection.id } });
   };
 

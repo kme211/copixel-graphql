@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import styled from "styled-components";
 import Cell from "./DrawingBoardCell";
 
@@ -22,17 +23,9 @@ const Row = styled.div`
 
 class DrawingBoard extends Component {
   render() {
-    const { width, height } = this.props;
-    const MAX_HEIGHT = window.innerHeight * 0.45; // Height of the grid should not exceed 45% of window height
-    const MAX_INNER_WIDTH = 800; // This value comes from the max-width of the Inner component
-    const optimalCellWidth = window.innerWidth >= MAX_INNER_WIDTH
-      ? MAX_INNER_WIDTH / width
-      : window.innerWidth / width;
-    const optimalCellHeight = height * optimalCellWidth > MAX_HEIGHT
-      ? MAX_HEIGHT / height
-      : optimalCellWidth;
-    const cellSize = Math.min(optimalCellWidth, optimalCellHeight);
+    const { width, height, cellSize } = this.props;
     const grid = [];
+    let i = 0;
 
     for (let y = 0; y < height; y++) {
       const cells = [];
@@ -43,14 +36,16 @@ class DrawingBoard extends Component {
           isNeighboringSection(x, y)
         );
         const status = section ? section.status : "NOT_STARTED";
-        let enabled = status === "NOT_STARTED"
-          ? neighboringSections.length &&
+        let enabled =
+          status === "NOT_STARTED"
+            ? neighboringSections.length &&
               neighboringSections.every(s => s.status === "COMPLETED")
-          : false;
-        if(!this.props.sections.length) enabled = true;
+            : false;
+        if (!this.props.sections.length) enabled = true;
 
         const cell = (
           <Cell
+            style={this.props.styles[i++]}
             key={`cell-${x}-${y}`}
             x={x}
             y={y}
@@ -62,10 +57,24 @@ class DrawingBoard extends Component {
         );
         cells.push(cell);
       }
-      grid.push(<Row key={`row-${y}`}>{cells}</Row>);
+      grid.push(
+        <Row key={`row-${y}`}>
+          {cells}
+        </Row>
+      );
     }
-    return <div>{grid}</div>;
+    return (
+      <div>
+        {grid}
+      </div>
+    );
   }
 }
+
+DrawingBoard.propTypes = {
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  cellSize: PropTypes.number.isRequired
+};
 
 export default DrawingBoard;

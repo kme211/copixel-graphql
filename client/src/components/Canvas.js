@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import getLocalCoords from "../utils/getLocalCoords";
 import { COLORS, ERASER } from "../constants";
+import PropTypes from "prop-types";
 
 class Canvas extends Component {
   constructor(props) {
@@ -16,6 +17,7 @@ class Canvas extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
+    if (this.props.isStatic) return false;
     return nextProps !== this.props;
   }
 
@@ -24,6 +26,7 @@ class Canvas extends Component {
   }
 
   updateCanvas() {
+    performance.mark("startUpdateCanvas");
     let {
       embed,
       embedWidth,
@@ -51,7 +54,13 @@ class Canvas extends Component {
     for (var pos in pixels) {
       let [x, y] = pos.split(",").map(parseFloat);
       if (sectionX >= 0) {
-        const localCoords = getLocalCoords(x, y, sectionX, sectionY, this.props.sectionSizePx);
+        const localCoords = getLocalCoords(
+          x,
+          y,
+          sectionX,
+          sectionY,
+          this.props.sectionSizePx
+        );
         x = localCoords[0];
         y = localCoords[1];
       }
@@ -74,10 +83,27 @@ class Canvas extends Component {
         ctx.fillRect(x, y, blockSize, blockSize);
       }
     }
+    performance.mark("endUpdateCanvas");
+    performance.measure(
+      "durationUpdateCanvas",
+      "startUpdateCanvas",
+      "endUpdateCanvas"
+    );
+    console.log("canvas updated");
   }
 
   render() {
-    const { embed, embedWidth, pixels, height, width, sectionSizePx, pixelSize, ...props } = this.props;
+    const {
+      embed,
+      embedWidth,
+      pixels,
+      height,
+      width,
+      sectionSizePx,
+      pixelSize,
+      isStatic,
+      ...props
+    } = this.props;
     let scale = 1;
     if (embedWidth) {
       scale = embedWidth / width;
@@ -95,5 +121,16 @@ class Canvas extends Component {
     );
   }
 }
+
+Canvas.propTypes = {
+  static: PropTypes.bool,
+  embed: PropTypes.bool,
+  embedWidth: PropTypes.number,
+  pixels: PropTypes.object.isRequired,
+  height: PropTypes.number.isRequired,
+  width: PropTypes.number.isRequired,
+  sectionSizePx: PropTypes.number.isRequired,
+  pixelSize: PropTypes.number.isRequired
+};
 
 export default Canvas;

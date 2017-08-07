@@ -45,12 +45,14 @@ const drawings = [
     messages: [
       {
         id: "1",
-        text: "Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.",
+        text:
+          "Quisque erat eros, viverra eget, congue eget, semper rutrum, nulla. Nunc purus.",
         author: "Zollie"
       },
       {
         id: "2",
-        text: "Ut tellus. Nulla ut erat id mauris vulputate elementum. Nullam varius.",
+        text:
+          "Ut tellus. Nulla ut erat id mauris vulputate elementum. Nullam varius.",
         author: "Uriah"
       }
     ]
@@ -68,7 +70,8 @@ const drawings = [
     messages: [
       {
         id: "3",
-        text: "Integer aliquet, massa id lobortis convallis, tortor risus dapibus augue, vel accumsan tellus nisi eu orci. Mauris lacinia sapien quis libero. Nullam sit amet turpis elementum ligula vehicula consequat. Morbi a ipsum. Integer a nibh. In quis justo.",
+        text:
+          "Integer aliquet, massa id lobortis convallis, tortor risus dapibus augue, vel accumsan tellus nisi eu orci. Mauris lacinia sapien quis libero. Nullam sit amet turpis elementum ligula vehicula consequat. Morbi a ipsum. Integer a nibh. In quis justo.",
         author: "Marnie"
       },
       {
@@ -90,10 +93,10 @@ const pubsub = new PubSub();
 export const resolvers = {
   Query: {
     drawings: () => {
-      console.log('Query drawings')
       return drawings;
     },
     drawing: (root, { id }) => {
+      console.log("get drawing");
       return drawings.find(drawing => drawing.id === id);
     },
     neighbors: (root, { drawingId, sectionX, sectionY }) => {
@@ -117,29 +120,37 @@ export const resolvers = {
       const results = [
         {
           neighbor: leftNeighbor,
-          filter: (pixel) => {
-            return pixel.x === ((sectionX - 1) * drawing.sectionSizePx) + (drawing.sectionSizePx - drawing.pixelSize);
+          filter: pixel => {
+            return (
+              pixel.x ===
+              (sectionX - 1) * drawing.sectionSizePx +
+                (drawing.sectionSizePx - drawing.pixelSize)
+            );
           },
           relativePosition: "LEFT"
         },
         {
           neighbor: rightNeighbor,
-          filter: (pixel) => {
-            return pixel.x === ((sectionX - 1) * drawing.sectionSizePx);
+          filter: pixel => {
+            return pixel.x === (sectionX - 1) * drawing.sectionSizePx;
           },
           relativePosition: "RIGHT"
         },
         {
           neighbor: topNeighbor,
-          filter: (pixel) => {
-            return pixel.x === ((sectionY - 1) * drawing.sectionSizePx) + (drawing.sectionSizePx - drawing.pixelSize);
+          filter: pixel => {
+            return (
+              pixel.x ===
+              (sectionY - 1) * drawing.sectionSizePx +
+                (drawing.sectionSizePx - drawing.pixelSize)
+            );
           },
           relativePosition: "TOP"
         },
         {
           neighbor: bottomNeighbor,
-          filter: (pixel) => {
-            return pixel.y === ((sectionX + 1) * drawing.sectionSizePx);
+          filter: pixel => {
+            return pixel.y === (sectionX + 1) * drawing.sectionSizePx;
           },
           relativePosition: "BOTTOM"
         }
@@ -165,7 +176,7 @@ export const resolvers = {
   },
   Mutation: {
     addDrawing: (root, { drawing }) => {
-      console.log('addDrawing', drawing)
+      console.log("addDrawing", drawing);
       const newDrawing = {
         id: String(nextId++),
         messages: [],

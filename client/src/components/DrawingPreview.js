@@ -1,18 +1,22 @@
 import React from "react";
 import { gql, graphql } from "react-apollo";
 
-const DrawingPreview = ({ data: { loading, error, channel } }) => {
+const DrawingPreview = ({ data: { loading, error, drawing } }) => {
   if (loading) {
     return <p>Loading ...</p>;
   }
   if (error) {
-    return <p>{error.message}</p>;
+    return (
+      <p>
+        {error.message}
+      </p>
+    );
   }
 
   return (
     <div>
       <div>
-        {channel.name}
+        {drawing.name}
       </div>
       <div>Loading Messages</div>
     </div>
@@ -20,7 +24,7 @@ const DrawingPreview = ({ data: { loading, error, channel } }) => {
 };
 
 export const drawingQuery = gql`
-  query DrawingQuery($drawingId : ID!) {
+  query DrawingQuery($drawingId: ID!) {
     drawing(id: $drawingId) {
       id
       name

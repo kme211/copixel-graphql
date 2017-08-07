@@ -8,17 +8,38 @@ import DrawingBoard from "./DrawingBoard";
 import SectionOverlay from "./SectionOverlay";
 import Cover from "./ModalCover";
 import Body from "./ModalBody";
+import Flipper from "./Flipper";
+import Canvas from "./Canvas";
 import { gql, graphql, compose } from "react-apollo";
+import getCellSize from "../utils/getOptimalCellSize";
+import { Motion, StaggeredMotion, spring } from "react-motion";
 
 const Chat = styled.div`
   display: flex;
   justify-content: space-between;
 `;
 
+const BoardContainer = styled.div`position: relative;`;
+
+const Prompt = styled.div`
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 2rem;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+`;
+
 class DrawingDetails extends Component {
   state = {
     participant: null,
-    currentSection: null
+    currentSection: null,
+    showDrawing: false
   };
 
   componentWillMount() {
@@ -55,13 +76,11 @@ class DrawingDetails extends Component {
         drawingId: this.props.match.params.drawingId
       },
       updateQuery: (prev, { subscriptionData }) => {
-        console.log('section updated!!!!')
         if (!subscriptionData.data) {
           return prev;
         }
 
         const sectionUpdated = subscriptionData.data.sectionUpdated;
-        console.log('sectionUpdated', sectionUpdated)
 
         return Object.assign({}, prev, {
           drawing: Object.assign({}, prev.drawing, {
@@ -76,14 +95,12 @@ class DrawingDetails extends Component {
   }
 
   saveParticipant = participant => {
-    console.log("saveParticipant", participant);
     this.setState({
       participant
     });
   };
 
   onCellClick = async ({ x, y }) => {
-    console.log("onCellClick", x, y, this.state.participant.name);
     const { data: { addSection } } = await this.props.addSectionMutation({
       variables: {
         section: {
@@ -98,39 +115,110 @@ class DrawingDetails extends Component {
   };
 
   onSectionSave = () => {
-    this.setState({currentSection: null });
-  }
+    this.setState({ currentSection: null });
+  };
+
+  toggleDrawing = () => {
+    console.log("showDrawing");
+    this.setState(prevState => ({
+      showDrawing: !prevState.showDrawing
+    }));
+  };
 
   render() {
     const { data: { loading, error, drawing }, match } = this.props;
-
-    if (!this.state.participant) {
-      return <GetParticipantInfo saveParticipant={this.saveParticipant} />;
-    }
 
     if (loading) {
       return <DrawingPreview drawingId={match.params.drawingId} />;
     }
     if (error) {
-      return <p>{error.message}</p>;
+      return (
+        <p>
+          {error.message}
+        </p>
+      );
     }
-    if (drawing === null) {
+    if (!drawing) {
       return <NotFound />;
     }
 
-    console.log("drawing", drawing);
+    const cellSize = getCellSize(drawing.width, drawing.height);
+    const drawingIsComplete =
+      drawing.sections.length === drawing.width * drawing.height &&
+      drawing.sections.every(s => s.status === "COMPLETED");
+    let finalPixels = {};
+    if (drawingIsComplete) {
+      const pixelsArr = drawing.sections
+        .map(s => s.pixels)
+        .reduce((a, b) => a.concat(b));
+      for (let px of pixelsArr) {
+        finalPixels[`${px.x},${px.y}`] = px.color;
+      }
+    }
+
+    const defaultStyles = new Array(drawing.width * drawing.height).fill({
+      opacity: 1
+    });
 
     return (
       <div>
+        {!this.state.participant &&
+          <GetParticipantInfo saveParticipant={this.saveParticipant} />}
         <div>
           {drawing.name}
         </div>
-        <DrawingBoard
-          width={drawing.width}
-          height={drawing.height}
-          sections={drawing.sections}
-          onCellClick={this.onCellClick}
-        />
+        <BoardContainer>
+          <StaggeredMotion
+            defaultStyles={defaultStyles}
+            styles={prevInterpolatedStyles =>
+              prevInterpolatedStyles.map((_, i) => {
+                return i === 0
+                  ? { opacity: spring(this.state.showDrawing ? 0 : 1) }
+                  : { opacity: spring(prevInterpolatedStyles[i - 1].opacity) };
+              })}
+          >
+            {interpolatingStyles =>
+              <DrawingBoard
+                styles={interpolatingStyles}
+                width={drawing.width}
+                height={drawing.height}
+                cellSize={cellSize}
+                sections={drawing.sections}
+                onCellClick={this.onCellClick}
+              />}
+          </StaggeredMotion>
+
+          {drawingIsComplete &&
+            <div>
+              <Canvas
+                isStatic
+                embed
+                style={{
+                  zIndex: -1,
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  margin: "0 auto"
+                }}
+                embedWidth={cellSize * drawing.width}
+                width={drawing.width * drawing.sectionSizePx}
+                height={drawing.height * drawing.sectionSizePx}
+                pixelSize={drawing.pixelSize}
+                sectionSizePx={drawing.sectionSizePx}
+                pixels={finalPixels}
+              />
+              <Motion
+                defaultStyles={{ opacity: 1 }}
+                style={{ opacity: spring(this.state.showDrawing ? 0 : 1) }}
+              >
+                {({ opacity }) =>
+                  <Prompt onClick={this.toggleDrawing} style={{ opacity }}>
+                    <h2>Reveal drawing!</h2>
+                  </Prompt>}
+              </Motion>
+            </div>}
+        </BoardContainer>
         <Chat>
           <MessageList
             messages={drawing.messages}
@@ -140,14 +228,14 @@ class DrawingDetails extends Component {
         {this.state.currentSection &&
           <Cover>
             <Body>
-          <SectionOverlay
-            creator={this.state.participant.name}
-            section={this.state.currentSection}
-            sectionSizePx={drawing.sectionSizePx}
-            pixelSize={drawing.pixelSize}
-            drawingId={match.params.drawingId}
-            onSectionSave={this.onSectionSave}
-          />
+              <SectionOverlay
+                creator={this.state.participant.name}
+                section={this.state.currentSection}
+                sectionSizePx={drawing.sectionSizePx}
+                pixelSize={drawing.pixelSize}
+                drawingId={match.params.drawingId}
+                onSectionSave={this.onSectionSave}
+              />
             </Body>
           </Cover>}
       </div>
@@ -156,7 +244,7 @@ class DrawingDetails extends Component {
 }
 
 export const drawingDetailsQuery = gql`
-  query DrawingDetailsQuery($drawingId : ID!) {
+  query DrawingDetailsQuery($drawingId: ID!) {
     drawing(id: $drawingId) {
       id
       name
@@ -168,12 +256,17 @@ export const drawingDetailsQuery = gql`
         id
         x
         y
+        pixels {
+          color
+          x
+          y
+        }
         status
       }
       messages {
         id
         text
-        author 
+        author
       }
     }
   }
@@ -196,6 +289,11 @@ const sectionsSubscription = gql`
       x
       y
       status
+      pixels {
+        x
+        y
+        color
+      }
     }
   }
 `;

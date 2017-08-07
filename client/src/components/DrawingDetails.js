@@ -10,20 +10,17 @@ import Button from "./Button";
 import Cover from "./ModalCover";
 import Body from "./ModalBody";
 import Canvas from "./Canvas";
+import MessagesContainer from "./MessagesContainer";
 import { gql, graphql, compose } from "react-apollo";
 import getCellSize from "../utils/getOptimalCellSize";
 import { Motion, StaggeredMotion, spring } from "react-motion";
-
-const Chat = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
 
 const BoardContainer = styled.div`
 position: relative;
 margin: 0 auto;
 ${props => `
-  width: ${props.width}px;
+  width: ${props.width};
+  height: ${props.height};
 `}
 `;
 
@@ -47,7 +44,8 @@ class DrawingDetails extends Component {
   state = {
     participant: null,
     currentSection: null,
-    showDrawing: false
+    showDrawing: false,
+    showMessages: true
   };
 
   componentWillMount() {
@@ -133,6 +131,11 @@ class DrawingDetails extends Component {
     }));
   };
 
+  toggleMessages = () => {
+    console.log('toggleMessages')
+    this.setState((prevState) => ({ showMessages: !prevState.showMessages}))
+  }
+
   render() {
     const { data: { loading, error, drawing }, match } = this.props;
 
@@ -176,7 +179,7 @@ class DrawingDetails extends Component {
         <div>
           {drawing.name}
         </div>
-        <BoardContainer width={cellSize * drawing.width}>
+        <BoardContainer width={`${cellSize * drawing.width}px`} height={this.state.showMessages ? 'calc(100% - 15rem)' : 'calc(100% - 3rem)'}>
           <StaggeredMotion
             defaultStyles={defaultStyles}
             styles={prevInterpolatedStyles =>
@@ -221,12 +224,11 @@ class DrawingDetails extends Component {
               {!this.state.showDrawing && <Button onClick={this.toggleDrawing}>Reveal drawing!</Button>}
             </div>}
         </BoardContainer>
-        <Chat>
-          <MessageList
-            messages={drawing.messages}
-            participant={this.state.participant}
-          />
-        </Chat>
+        <MessagesContainer
+          show={this.state.showMessages}
+          toggleShow={this.toggleMessages}
+          participant={this.state.participant}
+          messages={drawing.messages}/>
         {this.state.currentSection &&
           <Cover>
             <Body>

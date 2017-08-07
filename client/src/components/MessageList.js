@@ -13,19 +13,16 @@ const Author = styled.div`
   font-weight: 600;
 `;
 
-const Messages = styled.div`
-  height: 39vh;
-  overflow: auto;
-`;
-
 const Wrapper = styled.div`
   width: 100%;
+  & .area {
+    height: 9.75rem;
+  }
 `;
 
 const MessageList = ({ messages, participant }) => {
   return (
     <Wrapper>
-      <Messages>
         <ScrollArea
             speed={0.8}
             className="area"
@@ -42,7 +39,6 @@ const MessageList = ({ messages, participant }) => {
         </Message>
       ))}
       </ScrollArea>
-      </Messages>
       <AddMessage participant={participant} />
     </Wrapper>
   );

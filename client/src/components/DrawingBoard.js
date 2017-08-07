@@ -26,7 +26,6 @@ class DrawingBoard extends Component {
     const { width, height, cellSize } = this.props;
     const grid = [];
     let i = 0;
-
     for (let y = 0; y < height; y++) {
       const cells = [];
       for (let x = 0; x < width; x++) {
@@ -42,10 +41,13 @@ class DrawingBoard extends Component {
               neighboringSections.every(s => s.status === "COMPLETED")
             : false;
         if (!this.props.sections.length) enabled = true;
-
+        const styles = this.props.styles[i++];
         const cell = (
           <Cell
-            style={this.props.styles[i++]}
+            style={{
+              opacity: styles.opacity,
+              transform: `scale(${styles.scale})`
+            }}
             key={`cell-${x}-${y}`}
             x={x}
             y={y}

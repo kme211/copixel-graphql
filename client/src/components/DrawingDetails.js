@@ -6,9 +6,9 @@ import NotFound from "./NotFound";
 import GetParticipantInfo from "./GetParticipantInfo";
 import DrawingBoard from "./DrawingBoard";
 import SectionOverlay from "./SectionOverlay";
+import Button from "./Button";
 import Cover from "./ModalCover";
 import Body from "./ModalBody";
-import Flipper from "./Flipper";
 import Canvas from "./Canvas";
 import { gql, graphql, compose } from "react-apollo";
 import getCellSize from "../utils/getOptimalCellSize";
@@ -19,20 +19,28 @@ const Chat = styled.div`
   justify-content: space-between;
 `;
 
-const BoardContainer = styled.div`position: relative;`;
+const BoardContainer = styled.div`
+position: relative;
+margin: 0 auto;
+${props => `
+  width: ${props.width}px;
+`}
+`;
 
 const Prompt = styled.div`
   position: absolute;
   left: 0;
+  right: 0;
   top: 0;
   font-size: 2rem;
   color: white;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.25);
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
-  width: 100%;
+  text-align: center;
+  font-family: 'VT323', monospace;
 `;
 
 class DrawingDetails extends Component {
@@ -157,7 +165,8 @@ class DrawingDetails extends Component {
     }
 
     const defaultStyles = new Array(drawing.width * drawing.height).fill({
-      opacity: 1
+      opacity: 1,
+      scale: 1
     });
 
     return (
@@ -167,14 +176,15 @@ class DrawingDetails extends Component {
         <div>
           {drawing.name}
         </div>
-        <BoardContainer>
+        <BoardContainer width={cellSize * drawing.width}>
           <StaggeredMotion
             defaultStyles={defaultStyles}
             styles={prevInterpolatedStyles =>
               prevInterpolatedStyles.map((_, i) => {
+                const {showDrawing} = this.state;
                 return i === 0
-                  ? { opacity: spring(this.state.showDrawing ? 0 : 1) }
-                  : { opacity: spring(prevInterpolatedStyles[i - 1].opacity) };
+                  ? { opacity: spring(showDrawing ? 0 : 1), scale: spring(showDrawing ? 0 : 1) }
+                  : { opacity: spring(prevInterpolatedStyles[i - 1].opacity), scale: spring(prevInterpolatedStyles[i - 1].scale) };
               })}
           >
             {interpolatingStyles =>
@@ -208,15 +218,7 @@ class DrawingDetails extends Component {
                 sectionSizePx={drawing.sectionSizePx}
                 pixels={finalPixels}
               />
-              <Motion
-                defaultStyles={{ opacity: 1 }}
-                style={{ opacity: spring(this.state.showDrawing ? 0 : 1) }}
-              >
-                {({ opacity }) =>
-                  <Prompt onClick={this.toggleDrawing} style={{ opacity }}>
-                    <h2>Reveal drawing!</h2>
-                  </Prompt>}
-              </Motion>
+              {!this.state.showDrawing && <Button onClick={this.toggleDrawing}>Reveal drawing!</Button>}
             </div>}
         </BoardContainer>
         <Chat>

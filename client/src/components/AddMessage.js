@@ -55,6 +55,7 @@ const AddMessage = ({ mutate, match, participant }) => {
   return (
     <div className="messageInput">
       <Input
+        margin="0"
         type="text"
         placeholder="Write a message..."
         onKeyUp={handleKeyUp}

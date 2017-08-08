@@ -2,27 +2,37 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import MessageList from "./MessageList";
-import Motion, { spring } from "react-motion";
 import ScrollArea from "react-scroll";
 import Icon from "./Icon";
 
 const Wrapper = styled.div`
-  height: ${props => props.show ? '15rem' : '3rem'};
-  transition: height 0.4s linear;
+  height: ${props => props.height};
   overflow: hidden;
-  & .header {
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 1rem 0;
-  }
+  background-color: #ECF0F1;
+`;
+
+const HeaderButton = styled.h2`
+  background-color: #222;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 1rem;
+  cursor: pointer;
 `;
 
 class MessagesContainer extends Component {
   render() {
-
+    console.log(this.props.iconRotation);
     return (
-      <Wrapper show={this.props.show}>
-        <h2 className="header" onClick={this.props.toggleShow}>Messages <Icon icon="up-arrow"/></h2>
+      <Wrapper show={this.props.show} height={this.props.height}>
+        <HeaderButton onClick={this.props.toggleShow}>
+          Messages
+          {" "}
+          <Icon
+            style={{ transform: this.props.iconRotation }}
+            icon="up-arrow"
+          />
+        </HeaderButton>
         <MessageList
           messages={this.props.messages}
           participant={this.props.participant}

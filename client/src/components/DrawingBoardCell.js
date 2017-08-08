@@ -18,7 +18,6 @@ const Cell = styled.div`
 
 class DrawingBoardCell extends Component {
   onCellClick = () => {
-    console.log("onCellClick");
     const { x, y } = this.props;
     this.props.onCellClick({
       x,

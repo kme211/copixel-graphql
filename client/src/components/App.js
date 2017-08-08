@@ -76,26 +76,20 @@ const Wrapper = styled.div`
   }
 `;
 
-const Content = styled.div`
-  padding: 1rem 0;
-`;
-
 class App extends Component {
   render() {
     return (
       <ApolloProvider client={client}>
         <BrowserRouter>
           <Wrapper>
-            <Header/>
+            <Header />
             <Inner>
-              <Content>
-                <Switch>
-                  <Route exact path="/" component={DrawingsListWithData} />
-                  <Route path="/add" component={AddDrawing} />
-                  <Route path="/drawing/:drawingId" component={DrawingDetails} />
-                  <Route component={NotFound} />
-                </Switch>
-              </Content>
+              <Switch>
+                <Route exact path="/" component={DrawingsListWithData} />
+                <Route path="/add" component={AddDrawing} />
+                <Route path="/drawing/:drawingId" component={DrawingDetails} />
+                <Route component={NotFound} />
+              </Switch>
             </Inner>
           </Wrapper>
         </BrowserRouter>

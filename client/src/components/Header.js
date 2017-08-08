@@ -33,7 +33,7 @@ const Wrapper = styled.div`
   width: 100%;
   height: 3rem;
   line-height: 3rem;
-  box-shadow: 0px 2px 5px 0px rgba(50, 50, 50, 0.25);
+  background-color: #222;
   font-family: 'VT323', monospace;
   font-size: 2rem;
 `;

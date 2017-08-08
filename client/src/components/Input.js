@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Label from "./Label";
 
 const Wrapper = styled.div`
-  margin-bottom: 16px;
+  {props => props.margin ? '0 0 16px 0': margin}
   width: 100%;
 `;
 
@@ -25,9 +25,8 @@ const ValidationError = styled.div`
   color: tomato;
 `;
 
-
-const TextInput = ({ type, label, id, name, error, ...props }) => (
-  <Wrapper>
+const TextInput = ({ type, label, id, name, margin, error, ...props }) => (
+  <Wrapper margin={margin}>
     {label && <Label htmlFor={id}>{label}</Label>}
     <Input type={type} id={id} name={name || id} {...props} />
     {error && <ValidationError>{error}</ValidationError>}

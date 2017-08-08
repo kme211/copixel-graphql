@@ -17,7 +17,6 @@ class Canvas extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (this.props.isStatic) return false;
     return nextProps !== this.props;
   }
 

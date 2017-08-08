@@ -21,9 +21,14 @@ const Row = styled.div`
   justify-content: center;
 `;
 
+const Wrapper = styled.div`
+  position: relative;
+`;
+
 class DrawingBoard extends Component {
   render() {
     const { width, height, cellSize } = this.props;
+    console.log("cellSize", cellSize);
     const grid = [];
     let i = 0;
     for (let y = 0; y < height; y++) {
@@ -35,11 +40,10 @@ class DrawingBoard extends Component {
           isNeighboringSection(x, y)
         );
         const status = section ? section.status : "NOT_STARTED";
-        let enabled =
-          status === "NOT_STARTED"
-            ? neighboringSections.length &&
+        let enabled = status === "NOT_STARTED"
+          ? neighboringSections.length &&
               neighboringSections.every(s => s.status === "COMPLETED")
-            : false;
+          : false;
         if (!this.props.sections.length) enabled = true;
         const styles = this.props.styles[i++];
         const cell = (
@@ -66,9 +70,10 @@ class DrawingBoard extends Component {
       );
     }
     return (
-      <div>
+      <Wrapper>
+        {this.props.children && this.props.children}
         {grid}
-      </div>
+      </Wrapper>
     );
   }
 }

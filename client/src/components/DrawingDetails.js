@@ -22,6 +22,10 @@ ${props => `
   width: ${props.width};
   height: ${props.height};
 `}
+overflow: hidden;
+display: flex;
+justify-content: center;
+align-items: center;
 `;
 
 const Prompt = styled.div`
@@ -125,16 +129,18 @@ class DrawingDetails extends Component {
   };
 
   toggleDrawing = () => {
-    console.log("showDrawing");
     this.setState(prevState => ({
       showDrawing: !prevState.showDrawing
     }));
   };
 
   toggleMessages = () => {
-    console.log('toggleMessages')
-    this.setState((prevState) => ({ showMessages: !prevState.showMessages}))
-  }
+    this.setState(prevState => ({ showMessages: !prevState.showMessages }));
+  };
+
+  initializeBoardContainer = el => {
+    if (el) this.boardContainerEl = el;
+  };
 
   render() {
     const { data: { loading, error, drawing }, match } = this.props;
@@ -153,7 +159,12 @@ class DrawingDetails extends Component {
       return <NotFound />;
     }
 
-    const cellSize = getCellSize(drawing.width, drawing.height);
+    const cellSize = getCellSize(
+      drawing.width,
+      drawing.height,
+      this.boardContainerEl,
+      40
+    );
     const drawingIsComplete =
       drawing.sections.length === drawing.width * drawing.height &&
       drawing.sections.every(s => s.status === "COMPLETED");
@@ -173,62 +184,106 @@ class DrawingDetails extends Component {
     });
 
     return (
-      <div>
+      <div style={{ background: "rgb(234, 234, 234)" }}>
         {!this.state.participant &&
           <GetParticipantInfo saveParticipant={this.saveParticipant} />}
-        <div>
-          {drawing.name}
-        </div>
-        <BoardContainer width={`${cellSize * drawing.width}px`} height={this.state.showMessages ? 'calc(100% - 15rem)' : 'calc(100% - 3rem)'}>
-          <StaggeredMotion
-            defaultStyles={defaultStyles}
-            styles={prevInterpolatedStyles =>
-              prevInterpolatedStyles.map((_, i) => {
-                const {showDrawing} = this.state;
-                return i === 0
-                  ? { opacity: spring(showDrawing ? 0 : 1), scale: spring(showDrawing ? 0 : 1) }
-                  : { opacity: spring(prevInterpolatedStyles[i - 1].opacity), scale: spring(prevInterpolatedStyles[i - 1].scale) };
-              })}
-          >
-            {interpolatingStyles =>
-              <DrawingBoard
-                styles={interpolatingStyles}
-                width={drawing.width}
-                height={drawing.height}
-                cellSize={cellSize}
-                sections={drawing.sections}
-                onCellClick={this.onCellClick}
-              />}
-          </StaggeredMotion>
-
-          {drawingIsComplete &&
+        <Motion
+          defaultStyle={{
+            messagesHeight: this.state.showMessages ? 15 : 3,
+            messagesIconRotation: this.state.showMessages ? 180 : 0
+          }}
+          style={{
+            messagesHeight: spring(this.state.showMessages ? 15 : 3),
+            messagesIconRotation: spring(this.state.showMessages ? 180 : 0)
+          }}
+        >
+          {({ messagesHeight, messagesIconRotation }) => (
             <div>
-              <Canvas
-                isStatic
-                embed
-                style={{
-                  zIndex: -1,
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  margin: "0 auto"
-                }}
-                embedWidth={cellSize * drawing.width}
-                width={drawing.width * drawing.sectionSizePx}
-                height={drawing.height * drawing.sectionSizePx}
-                pixelSize={drawing.pixelSize}
-                sectionSizePx={drawing.sectionSizePx}
-                pixels={finalPixels}
+              <BoardContainer
+                width={`${getCellSize(drawing.width, drawing.height, this.boardContainerEl, 40) * drawing.width}px`}
+                innerRef={this.initializeBoardContainer}
+                height={`calc(100vh - ${messagesHeight + 3}rem)`}
+              >
+                <StaggeredMotion
+                  defaultStyles={defaultStyles}
+                  styles={prevInterpolatedStyles =>
+                    prevInterpolatedStyles.map((_, i) => {
+                      const { showDrawing } = this.state;
+                      return i === 0
+                        ? {
+                            opacity: spring(showDrawing ? 0 : 1),
+                            scale: spring(showDrawing ? 0 : 1)
+                          }
+                        : {
+                            opacity: spring(
+                              prevInterpolatedStyles[i - 1].opacity
+                            ),
+                            scale: spring(prevInterpolatedStyles[i - 1].scale)
+                          };
+                    })}
+                >
+                  {interpolatingStyles => (
+                    <div>
+                      <DrawingBoard
+                        styles={interpolatingStyles}
+                        width={drawing.width}
+                        height={drawing.height}
+                        cellSize={getCellSize(
+                          drawing.width,
+                          drawing.height,
+                          this.boardContainerEl,
+                          40
+                        )}
+                        sections={drawing.sections}
+                        onCellClick={this.onCellClick}
+                      >
+                        {drawingIsComplete &&
+                          <Canvas
+                            embed
+                            style={{
+                              zIndex: 0,
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              margin: "0 auto"
+                            }}
+                            embedWidth={
+                              getCellSize(
+                                drawing.width,
+                                drawing.height,
+                                this.boardContainerEl,
+                                40
+                              ) * drawing.width
+                            }
+                            width={drawing.width * drawing.sectionSizePx}
+                            height={drawing.height * drawing.sectionSizePx}
+                            pixelSize={drawing.pixelSize}
+                            sectionSizePx={drawing.sectionSizePx}
+                            pixels={finalPixels}
+                          />}
+                      </DrawingBoard>
+                      {!this.state.showDrawing &&
+                        <Button onClick={this.toggleDrawing}>
+                          Reveal drawing!
+                        </Button>}
+                    </div>
+                  )}
+                </StaggeredMotion>
+
+              </BoardContainer>
+              <MessagesContainer
+                show={this.state.showMessages}
+                height={`${messagesHeight}rem`}
+                iconRotation={`rotate(${messagesIconRotation}deg)`}
+                toggleShow={this.toggleMessages}
+                participant={this.state.participant}
+                messages={drawing.messages}
               />
-              {!this.state.showDrawing && <Button onClick={this.toggleDrawing}>Reveal drawing!</Button>}
-            </div>}
-        </BoardContainer>
-        <MessagesContainer
-          show={this.state.showMessages}
-          toggleShow={this.toggleMessages}
-          participant={this.state.participant}
-          messages={drawing.messages}/>
+            </div>
+          )}
+        </Motion>
+
         {this.state.currentSection &&
           <Cover>
             <Body>

@@ -1,19 +1,5 @@
-import Mongoose from "mongoose";
-const Schema = Mongoose.Schema;
-const mongoUrl = process.env.DATABASE;
-
-const connectWithRetry = function() {
-  return Mongoose.connect(mongoUrl, function(err) {
-    if (err) {
-      console.error(
-        "Failed to connect to mongo on startup - retrying in 5 sec",
-        err
-      );
-      setTimeout(connectWithRetry, 5000);
-    }
-  });
-};
-connectWithRetry();
+import mongoose from "mongoose";
+const Schema = mongoose.Schema;
 
 // User
 
@@ -35,7 +21,7 @@ const userSchema = new Schema({
   }
 });
 
-const User = Mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
 
 // Drawing
 
@@ -172,7 +158,7 @@ drawingSchema.methods.getNeighborsOfSection = function(sectionX, sectionY) {
   return neighbors;
 };
 
-const Drawing = Mongoose.model("Drawing", drawingSchema);
+const Drawing = mongoose.model("Drawing", drawingSchema);
 
 // Section
 
@@ -205,7 +191,7 @@ const sectionSchema = new Schema({
   pixels: Schema.Types.Mixed
 });
 
-const Section = Mongoose.model("Section", sectionSchema);
+const Section = mongoose.model("Section", sectionSchema);
 
 // Message
 
@@ -231,6 +217,6 @@ const messageSchema = new Schema({
   }
 });
 
-const Message = Mongoose.model("Message", messageSchema);
+const Message = mongoose.model("Message", messageSchema);
 
 export { User, Drawing, Section, Message };

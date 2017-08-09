@@ -1,45 +1,14 @@
 import { PubSub } from "graphql-subscriptions";
 import { withFilter } from "graphql-subscriptions";
-import { User, Drawing, Section } from "./connectors";
+import { User, Drawing, Section } from "./models";
 import { promisify } from "util";
-import jwt from "jsonwebtoken";
-import jwksRsa from "jwks-rsa";
-
-const verifyJwt = promisify(jwt.verify);
 
 const pubsub = new PubSub();
 
-const verifyToken = async token => {
-  console.log("getUser");
-  try {
-    const decoded = await verifyJwt(
-      token,
-      jwksRsa.expressJwtSecret({
-        cache: true,
-        rateLimit: true,
-        jwksRequestsPerMinute: 5,
-        jwksUri: `https://${process.env.AUTH_DOMAIN}/.well-known/jwks.json`
-      }),
-      {
-        audience: "http://localhost:7777/api", // had to set this up in the APIs section of Auth0
-        issuer: `https://${process.env.AUTH_DOMAIN}/`,
-        algorithms: ["RS256"]
-      }
-    );
-    console.log("decoded", decoded);
-    const id = decoded.sub.split("|")[1];
-    const user = await User.findOne({ id });
-    return { error: null, user };
-  } catch (e) {
-    return { error: e, user: null };
-  }
-};
-
 export const resolvers = {
   Query: {
-    user: async () => {
-      console.log("getUser");
-      const { error, user } = verifyToken(token);
+    user: async (root, args, { error, user }) => {
+      console.log("getUser", root, args);
       if (error) console.error(error);
       throw new Error(error);
 
@@ -54,23 +23,22 @@ export const resolvers = {
       console.log("get drawing", id);
 
       const drawing = await Drawing.findById(id);
-      if(!drawing) throw new Error("drawing not found");
+      if (!drawing) throw new Error("drawing not found");
       return drawing;
     },
     neighbors: async (root, { drawingId, sectionX, sectionY }) => {
       console.log("getSectionNeighbors", sectionX, sectionY);
-      
+
       const drawing = await Drawing.findById(drawingId);
-      if(!drawing) throw new Error("drawing not found");
+      if (!drawing) throw new Error("drawing not found");
       const neighbors = drawing.getNeighborsOfSection(sectionX, sectionY);
       return neighbors;
     }
   },
   Mutation: {
-    addDrawing: async (root, { drawing: options, token }) => {
+    addDrawing: async (root, { drawing: options }, { error, user }) => {
       console.log("addDrawing", options);
 
-      const { error, user } = verifyToken(token);
       if (error) console.error(error);
       throw new Error(error);
 
@@ -83,7 +51,7 @@ export const resolvers = {
       const drawing = await new Drawing(newDrawing).save();
       return drawing;
     },
-    addMessage: async (root, { message: options, token }) => {
+    addMessage: async (root, { message: options }, { error, user }) => {
       console.log("addMessage", options);
 
       const { error, user } = verifyToken(token);

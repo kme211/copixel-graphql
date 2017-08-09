@@ -27,6 +27,8 @@
     "graphql-server-module-graphiql": "^1.0.5",
     "graphql-subscriptions": "^0.4.4",
     "graphql-tools": "^1.1.0",
+    "jsonwebtoken": "^7.4.2",
+    "jwks-rsa": "^1.2.0",
     "mongoose": "^4.11.6",
     "subscriptions-transport-ws": "^0.8.2"
   }

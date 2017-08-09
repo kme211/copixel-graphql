@@ -7,7 +7,7 @@ import { resolvers } from './resolvers';
 
 const typeDefs = `
 type User {
-  id: ID!
+  auth0UserId: ID!
   email: String
   username: String
 }

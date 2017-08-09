@@ -2,6 +2,7 @@ import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
 import Inner from "./Inner";
+import LoginButton from "./LoginButton";
 
 const Nav = styled.nav`
   display: flex;
@@ -38,12 +39,16 @@ const Wrapper = styled.div`
   font-size: 2rem;
 `;
 
-const Header = () => (
+const clientId = process.env.CLIENT_ID;
+const domain = process.env.DOMAIN;
+
+const Header = (props) => (
   <Wrapper>
     <Inner>
       <Nav>
         <HomeLink to="/">copixel</HomeLink>
-        <StyledNavLink to="/add" activeStyle={activeStyle}>add</StyledNavLink>
+        {!props.isLoggedIn && <LoginButton clientId={clientId} domain={domain}  />}
+        {props.isLoggedIn && <StyledNavLink to="/add" activeStyle={activeStyle}>add</StyledNavLink>}
       </Nav>
     </Inner>
   </Wrapper>

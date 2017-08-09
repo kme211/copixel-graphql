@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch, withRouter } from "react-router-dom";
 import styled from "styled-components";
 import DrawingsListWithData from "./DrawingsListWithData";
 import AddDrawing from "./AddDrawing";
@@ -7,6 +7,7 @@ import NotFound from "./NotFound";
 import DrawingDetails from "./DrawingDetails";
 import Inner from "./Inner";
 import Header from "./Header";
+import { gql, graphql } from "react-apollo";
 import {
   ApolloClient,
   ApolloProvider,
@@ -25,6 +26,13 @@ const networkInterface = createNetworkInterface({
 networkInterface.use([
   {
     applyMiddleware(req, next) {
+      if (!req.options.headers) {
+        req.options.headers = {};
+      }
+
+      if (localStorage.getItem("auth0IdToken")) {
+        req.options.headers.authorization = `Bearer ${localStorage.getItem("auth0IdToken")}`;
+      }
       setTimeout(next, 500);
     }
   }
@@ -77,17 +85,38 @@ const Wrapper = styled.div`
 `;
 
 class App extends Component {
+  logout = () => {
+    window.localStorage.removeItem("auth0IdToken");
+    location.reload();
+  };
+  isLoggedIn = () => {
+    return this.props.data.user;
+  };
   render() {
+    if (this.props.data.loading) {
+      return <div>Loading</div>;
+    }
     return (
       <ApolloProvider client={client}>
         <BrowserRouter>
           <Wrapper>
-            <Header />
+            <Header isLoggedIn={this.isLoggedIn} />
             <Inner>
               <Switch>
                 <Route exact path="/" component={DrawingsListWithData} />
-                <Route path="/add" component={AddDrawing} />
-                <Route path="/drawing/:drawingId" component={DrawingDetails} />
+                <Route exact path="/signup" component={DrawingsListWithData} />
+                <Route
+                  path="/add"
+                  render={props => (
+                    <AddDrawing {...props} user={this.props.data.user} />
+                  )}
+                />
+                <Route
+                  path="/drawing/:drawingId"
+                  render={props => (
+                    <DrawingDetails {...props} user={this.props.data.user} />
+                  )}
+                />
                 <Route component={NotFound} />
               </Switch>
             </Inner>
@@ -98,4 +127,14 @@ class App extends Component {
   }
 }
 
-export default App;
+const userQuery = gql`
+  query userQuery {
+    user {
+      _id
+    }
+  }
+`;
+
+const AppWithData = graphql(userQuery)(withRouter(App));
+
+export default AppWithData;

@@ -10,8 +10,6 @@ import { execute, subscribe } from "graphql";
 import { createServer } from "http";
 import { SubscriptionServer } from "subscriptions-transport-ws";
 import verifyToken from "./utils/verifyToken";
-
-import mongoose from "mongoose";
 const mongoUrl = process.env.DATABASE;
 
 const connectWithRetry = function() {

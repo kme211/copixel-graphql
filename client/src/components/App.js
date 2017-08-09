@@ -87,7 +87,7 @@ const Wrapper = styled.div`
 class App extends Component {
   logout = () => {
     window.localStorage.removeItem("auth0IdToken");
-    location.reload();
+    window.location.reload();
   };
   isLoggedIn = () => {
     return this.props.data.user;
@@ -100,7 +100,7 @@ class App extends Component {
       <ApolloProvider client={client}>
         <BrowserRouter>
           <Wrapper>
-            <Header isLoggedIn={this.isLoggedIn} />
+            <Header isLoggedIn={this.isLoggedIn} logout={this.logout} />
             <Inner>
               <Switch>
                 <Route exact path="/" component={DrawingsListWithData} />

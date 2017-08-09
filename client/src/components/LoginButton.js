@@ -18,6 +18,7 @@ class LoginButton extends Component {
 
   componentDidMount() {
     this._lock.on("authenticated", authResult => {
+      console.log("authenticated");
       window.localStorage.setItem("auth0IdToken", authResult.idToken);
       this.props.history.push(`/signup`);
     });
@@ -30,9 +31,7 @@ class LoginButton extends Component {
   render() {
     return (
       <div>
-        <span
-          onClick={this._showLogin}
-        >
+        <span onClick={this._showLogin}>
           Log in with Auth0
         </span>
       </div>

@@ -5,6 +5,7 @@
   "dependencies": {
     "apollo-client": "^1.1.1",
     "apollo-test-utils": "^0.1.1",
+    "auth0-lock": "^10.19.0",
     "autoprefixer": "7.1.1",
     "babel-core": "6.25.0",
     "babel-eslint": "7.2.3",

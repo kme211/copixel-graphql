@@ -48,6 +48,7 @@ const Header = (props) => (
       <Nav>
         <HomeLink to="/">copixel</HomeLink>
         {!props.isLoggedIn && <LoginButton clientId={clientId} domain={domain}  />}
+        {props.isLoggedIn && <button onClick={this.props.logout}>Logout</button>}
         {props.isLoggedIn && <StyledNavLink to="/add" activeStyle={activeStyle}>add</StyledNavLink>}
       </Nav>
     </Inner>

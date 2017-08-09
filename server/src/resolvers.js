@@ -1,97 +1,81 @@
 import { PubSub } from "graphql-subscriptions";
 import { withFilter } from "graphql-subscriptions";
 import { User, Drawing, Section } from "./connectors";
+import { promisify } from "util";
+import jwt from "jsonwebtoken";
+import jwksRsa from "jwks-rsa";
+
+const verifyJwt = promisify(jwt.verify);
 
 const pubsub = new PubSub();
 
+const verifyToken = async token => {
+  console.log("getUser");
+  try {
+    const decoded = await verifyJwt(
+      token,
+      jwksRsa.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: `https://${process.env.AUTH_DOMAIN}/.well-known/jwks.json`
+      }),
+      {
+        audience: "http://localhost:7777/api", // had to set this up in the APIs section of Auth0
+        issuer: `https://${process.env.AUTH_DOMAIN}/`,
+        algorithms: ["RS256"]
+      }
+    );
+    console.log("decoded", decoded);
+    const id = decoded.sub.split("|")[1];
+    const user = await User.findOne({ id });
+    return { error: null, user };
+  } catch (e) {
+    return { error: e, user: null };
+  }
+};
+
 export const resolvers = {
   Query: {
-    drawings: () => {
+    user: async () => {
+      console.log("getUser");
+      const { error, user } = verifyToken(token);
+      if (error) console.error(error);
+      throw new Error(error);
+
+      console.log("user", user);
+      return user;
+    },
+    drawings: async () => {
+      const drawings = await Drawing.find();
       return drawings;
     },
-    drawing: (root, { id }) => {
-      console.log("get drawing");
-      return drawings.find(drawing => drawing.id === id);
+    drawing: async (root, { id }) => {
+      console.log("get drawing", id);
+
+      const drawing = await Drawing.findById(id);
+      if(!drawing) throw new Error("drawing not found");
+      return drawing;
     },
-    neighbors: (root, { drawingId, sectionX, sectionY }) => {
+    neighbors: async (root, { drawingId, sectionX, sectionY }) => {
       console.log("getSectionNeighbors", sectionX, sectionY);
-      const drawing = drawings.find(drawing => drawing.id === drawingId);
-      if (!drawing) throw new Error("Drawing does not exist");
-
-      const leftNeighbor = drawing.sections.find(
-        s => s.x === sectionX - 1 && s.y === sectionY
-      );
-      const rightNeighbor = drawing.sections.find(
-        s => s.x === sectionX + 1 && s.y === sectionY
-      );
-      const topNeighbor = drawing.sections.find(
-        s => s.x === sectionX && s.y === sectionY - 1
-      );
-      const bottomNeighbor = drawing.sections.find(
-        s => s.x === sectionX && s.y === sectionY + 1
-      );
-
-      const results = [
-        {
-          neighbor: leftNeighbor,
-          filter: pixel => {
-            return (
-              pixel.x ===
-              (sectionX - 1) * drawing.sectionSizePx +
-                (drawing.sectionSizePx - drawing.pixelSize)
-            );
-          },
-          relativePosition: "LEFT"
-        },
-        {
-          neighbor: rightNeighbor,
-          filter: pixel => {
-            return pixel.x === (sectionX - 1) * drawing.sectionSizePx;
-          },
-          relativePosition: "RIGHT"
-        },
-        {
-          neighbor: topNeighbor,
-          filter: pixel => {
-            return (
-              pixel.x ===
-              (sectionY - 1) * drawing.sectionSizePx +
-                (drawing.sectionSizePx - drawing.pixelSize)
-            );
-          },
-          relativePosition: "TOP"
-        },
-        {
-          neighbor: bottomNeighbor,
-          filter: pixel => {
-            return pixel.y === (sectionX + 1) * drawing.sectionSizePx;
-          },
-          relativePosition: "BOTTOM"
-        }
-      ];
-
-      const neighbors = [];
-
-      for (let result of results) {
-        if (result.neighbor) {
-          const { axis, axisCoord } = result;
-          const neighbor = {
-            x: result.neighbor.x,
-            y: result.neighbor.y,
-            relativePosition: result.relativePosition,
-            pixels: result.neighbor.pixels.filter(result.filter)
-          };
-          neighbors.push(neighbor);
-        }
-      }
-
+      
+      const drawing = await Drawing.findById(drawingId);
+      if(!drawing) throw new Error("drawing not found");
+      const neighbors = drawing.getNeighborsOfSection(sectionX, sectionY);
       return neighbors;
     }
   },
   Mutation: {
-    addDrawing: async (root, { drawing: options }) => {
+    addDrawing: async (root, { drawing: options, token }) => {
       console.log("addDrawing", options);
+
+      const { error, user } = verifyToken(token);
+      if (error) console.error(error);
+      throw new Error(error);
+
       const newDrawing = {
+        creator: user.id,
         width: options.width,
         height: options.height,
         name: options.name
@@ -99,11 +83,16 @@ export const resolvers = {
       const drawing = await new Drawing(newDrawing).save();
       return drawing;
     },
-    addMessage: async (root, { message: options }) => {
+    addMessage: async (root, { message: options, token }) => {
       console.log("addMessage", options);
+
+      const { error, user } = verifyToken(token);
+      if (error) console.error(error);
+      throw new Error(error);
+
       const newMessage = {
         text: message.text,
-        author: message.author, // grab author ID from token
+        author: user.id, // grab author ID from token
         drawing: message.drawingId
       };
 
@@ -120,11 +109,15 @@ export const resolvers = {
     addSection: async (root, { section: options }) => {
       console.log("addSection", options);
 
+      const { error, user } = verifyToken(token);
+      if (error) console.error(error);
+      throw new Error(error);
+
       const newSection = {
         x: options.x,
         y: options.y,
         status: "IN_PROGRESS",
-        creator: options.creator // grab creator ID from token
+        creator: user.id // grab creator ID from token
       };
 
       // TODO: Check if section already exists

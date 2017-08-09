@@ -40,6 +40,10 @@ const User = Mongoose.model("User", userSchema);
 // Drawing
 
 const drawingSchema = new Schema({
+  creator: {
+    type: Schema.ObjectId,
+    ref: "User"
+  },
   created: {
     type: Date,
     default: Date.now
@@ -95,7 +99,7 @@ function autopopulate(next) {
 drawingSchema.pre("find", autopopulate);
 drawingSchema.pre("findOne", autopopulate);
 
-drawingSchema.statics.getNeighborsOfSection = function(sectionX, sectionY) {
+drawingSchema.methods.getNeighborsOfSection = function(sectionX, sectionY) {
   console.log("getNeighborsOfSection", sectionX, sectionY);
 
   const leftNeighbor = this.sections.find(

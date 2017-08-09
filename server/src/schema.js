@@ -95,9 +95,9 @@ type Query {
 
 # The mutation root type, used to define all mutations
 type Mutation {
-  addDrawing(drawing: DrawingInput!): Drawing
-  addMessage(message: MessageInput!): Message
-  addSection(section: SectionInput!): Section
+  addDrawing(drawing: DrawingInput!, token: String!): Drawing
+  addMessage(message: MessageInput!, token: String!): Message
+  addSection(section: SectionInput!, token: String!): Section
   addPixelsToSection(sectionId: ID!, pixels: [PixelInput!]!): Section
 }
 

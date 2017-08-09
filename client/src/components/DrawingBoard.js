@@ -28,7 +28,6 @@ const Wrapper = styled.div`
 class DrawingBoard extends Component {
   render() {
     const { width, height, cellSize } = this.props;
-    console.log("cellSize", cellSize);
     const grid = [];
     let i = 0;
     for (let y = 0; y < height; y++) {

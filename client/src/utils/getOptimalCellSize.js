@@ -21,7 +21,7 @@ function getOptimalCellSize(drawingWidth, drawingHeight, container, marginPx) {
     optimalCellWidth - margin / drawingWidth,
     optimalCellHeight - margin / drawingHeight
   );
-  return size;
+  return Math.max(0, size);
 }
 
 export default getOptimalCellSize;

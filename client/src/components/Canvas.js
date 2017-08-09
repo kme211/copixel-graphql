@@ -88,7 +88,6 @@ class Canvas extends Component {
       "startUpdateCanvas",
       "endUpdateCanvas"
     );
-    console.log("canvas updated");
   }
 
   render() {

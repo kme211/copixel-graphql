@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import MessageList from "./MessageList";
 import DrawingPreview from "./DrawingPreview";
 import NotFound from "./NotFound";
 import GetParticipantInfo from "./GetParticipantInfo";
@@ -9,10 +8,10 @@ import SectionOverlay from "./SectionOverlay";
 import Button from "./Button";
 import Cover from "./ModalCover";
 import Body from "./ModalBody";
-import Canvas from "./Canvas";
 import MessagesContainer from "./MessagesContainer";
 import { gql, graphql, compose } from "react-apollo";
 import getCellSize from "../utils/getOptimalCellSize";
+import CompleteDrawing from "./CompleteDrawing";
 import { Motion, StaggeredMotion, spring } from "react-motion";
 
 const BoardContainer = styled.div`
@@ -26,22 +25,6 @@ overflow: hidden;
 display: flex;
 justify-content: center;
 align-items: center;
-`;
-
-const Prompt = styled.div`
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  font-size: 2rem;
-  color: white;
-  background-color: rgba(0, 0, 0, 0.25);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  text-align: center;
-  font-family: 'VT323', monospace;
 `;
 
 class DrawingDetails extends Component {
@@ -159,24 +142,9 @@ class DrawingDetails extends Component {
       return <NotFound />;
     }
 
-    const cellSize = getCellSize(
-      drawing.width,
-      drawing.height,
-      this.boardContainerEl,
-      40
-    );
     const drawingIsComplete =
       drawing.sections.length === drawing.width * drawing.height &&
       drawing.sections.every(s => s.status === "COMPLETED");
-    let finalPixels = {};
-    if (drawingIsComplete) {
-      const pixelsArr = drawing.sections
-        .map(s => s.pixels)
-        .reduce((a, b) => a.concat(b));
-      for (let px of pixelsArr) {
-        finalPixels[`${px.x},${px.y}`] = px.color;
-      }
-    }
 
     const defaultStyles = new Array(drawing.width * drawing.height).fill({
       opacity: 1,
@@ -238,16 +206,12 @@ class DrawingDetails extends Component {
                         onCellClick={this.onCellClick}
                       >
                         {drawingIsComplete &&
-                          <Canvas
-                            embed
-                            style={{
-                              zIndex: 0,
-                              position: "absolute",
-                              top: 0,
-                              left: 0,
-                              right: 0,
-                              margin: "0 auto"
-                            }}
+                          <CompleteDrawing
+                            drawingId={drawing.id}
+                            width={drawing.width * drawing.sectionSizePx}
+                            height={drawing.height * drawing.sectionSizePx}
+                            pixelSize={drawing.pixelSize}
+                            sectionSizePx={drawing.sectionSizePx}
                             embedWidth={
                               getCellSize(
                                 drawing.width,
@@ -256,14 +220,17 @@ class DrawingDetails extends Component {
                                 40
                               ) * drawing.width
                             }
-                            width={drawing.width * drawing.sectionSizePx}
-                            height={drawing.height * drawing.sectionSizePx}
-                            pixelSize={drawing.pixelSize}
-                            sectionSizePx={drawing.sectionSizePx}
-                            pixels={finalPixels}
+                            style={{
+                              zIndex: 0,
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              right: 0
+                            }}
                           />}
                       </DrawingBoard>
-                      {!this.state.showDrawing &&
+                      {drawingIsComplete &&
+                        !this.state.showDrawing &&
                         <Button onClick={this.toggleDrawing}>
                           Reveal drawing!
                         </Button>}
@@ -315,11 +282,6 @@ export const drawingDetailsQuery = gql`
         id
         x
         y
-        pixels {
-          color
-          x
-          y
-        }
         status
       }
       messages {
@@ -348,11 +310,6 @@ const sectionsSubscription = gql`
       x
       y
       status
-      pixels {
-        x
-        y
-        color
-      }
     }
   }
 `;

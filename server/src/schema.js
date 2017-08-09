@@ -6,6 +6,12 @@ import {
 import { resolvers } from './resolvers';
 
 const typeDefs = `
+type User {
+  id: ID!
+  email: String
+  username: String
+}
+
 type Drawing {
   id: ID!
   name: String
@@ -92,7 +98,7 @@ type Mutation {
   addDrawing(drawing: DrawingInput!): Drawing
   addMessage(message: MessageInput!): Message
   addSection(section: SectionInput!): Section
-  addPixelsToSection(drawingId: ID!, sectionId: ID!, pixels: [PixelInput!]!): Section
+  addPixelsToSection(sectionId: ID!, pixels: [PixelInput!]!): Section
 }
 
 # The subscription root type, specifying what we can subscribe to

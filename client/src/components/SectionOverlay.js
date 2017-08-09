@@ -11,7 +11,6 @@ class SectionOverlay extends Component {
     console.log("savePixels", this.props);
     const response = await this.props.addPixelsToSectionMutation({
       variables: {
-        drawingId: this.props.drawingId,
         sectionId: this.props.section.id,
         pixels
       }
@@ -43,8 +42,8 @@ class SectionOverlay extends Component {
 }
 
 const getSectionNeighbors = gql`
-  query neighbors($drawingId: ID!, $sectionX: Int!, $sectionY: Int!) {
-    neighbors(drawingId: $drawingId, sectionX: $sectionX, sectionY: $sectionY) {
+  query neighbors($sectionX: Int!, $sectionY: Int!) {
+    neighbors(sectionX: $sectionX, sectionY: $sectionY) {
       x
       y
       relativePosition
@@ -58,8 +57,8 @@ const getSectionNeighbors = gql`
 `;
 
 const addPixelsToSectionMutation = gql`
-  mutation addPixelsToSection($drawingId: ID!, $sectionId: ID!, $pixels: [PixelInput!]!) {
-    addPixelsToSection(drawingId: $drawingId, sectionId: $sectionId, pixels: $pixels) {
+  mutation addPixelsToSection($sectionId: ID!, $pixels: [PixelInput!]!) {
+    addPixelsToSection(sectionId: $sectionId, pixels: $pixels) {
       status
     }
   }
@@ -69,7 +68,6 @@ const sectionOverlayWithData = compose(
   graphql(getSectionNeighbors, {
     options: props => ({
       variables: {
-        drawingId: props.drawingId,
         sectionX: props.section.x,
         sectionY: props.section.y
       }

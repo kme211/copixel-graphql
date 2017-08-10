@@ -1,7 +1,6 @@
 import React from "react";
 
 const NotFound = (props) => {
-  debugger;
   return <div className="NotFound">404 Not Found</div>;
 };
 

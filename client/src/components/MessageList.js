@@ -1,7 +1,5 @@
-import React from "react";
+import React, { Component } from "react";
 import styled from "styled-components";
-import AddMessage from "./AddMessage";
-import ScrollArea from "react-scrollbar";
 import PropTypes from "prop-types";
 
 const Message = styled.div`
@@ -11,42 +9,50 @@ const Message = styled.div`
 
 const Author = styled.span`
   font-weight: 600;
-
 `;
 
-const Wrapper = styled.div`
-  width: 100%;
-  padding: 0.5rem 1rem;
-  font-size: 0.85rem;
-  & .area {
-    height: 9rem;
+class MessageList extends Component {
+  static propTypes = {
+    userIsScrolling: PropTypes.bool.isRequired,
+    messages: PropTypes.array.isRequired,
+    participant: PropTypes.object.isRequired
+  };
+
+  componentDidUpdate(prevProps) {
+    if(prevProps.messages.length < this.props.messages.length) {
+      this.scrollToBottom();
+    }
   }
-`;
 
-const MessageList = ({ messages, participant }) => {
-  return (
-    <Wrapper>
-      <ScrollArea
-        speed={0.8}
-        className="area"
-        contentClassName="content"
-        horizontal={false}
-      >
-        {messages.map(message => (
-          <Message key={message.id} optimistic={message.id < 0}>
+  scrollToBottom = () => {
+    if(this.props.userIsScrolling) return;
+    try {
+      console.log("Attempting to scroll to bottom");
+      this.context.scrollArea.scrollBottom();
+    } catch(e) {
+      console.log("Scroll to bottom did not working trying again 50ms")
+      window.setTimeout(() => this.scrollToBottom(), 50);
+    }
+  }
 
-            <div><Author>{message.author.username}</Author>: {message.text}</div>
-          </Message>
-        ))}
-      </ScrollArea>
-      <AddMessage participant={participant} />
-    </Wrapper>
-  );
-};
+  render() {
+    console.log('context', this.context.scrollArea)
+    return (
+      <div>
+        {this.props.messages.map(message => (
+            <Message key={message.id} optimistic={message.id < 0}>
+              <div>
+                <Author>{message.author.username}</Author>: {message.text}
+              </div>
+            </Message>
+          ))}
+      </div>
+    );
+  }
+}
 
-MessageList.propTypes = {
-  messages: PropTypes.array.isRequired,
-  participant: PropTypes.object.isRequired
+MessageList.contextTypes = {
+    scrollArea: PropTypes.object
 };
 
 export default MessageList;

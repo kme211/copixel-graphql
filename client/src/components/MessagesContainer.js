@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import ScrollArea from "react-scrollbar";
+import AddMessage from "./AddMessage";
 import MessageList from "./MessageList";
 import Icon from "./Icon";
 
@@ -19,7 +21,28 @@ const HeaderButton = styled.h2`
   cursor: pointer;
 `;
 
+const ScrollWrapper = styled.div`
+  width: 100%;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  & .area {
+    height: 9rem;
+  }
+`;
+
 class MessagesContainer extends Component {
+  state = { userIsScrolling: false };
+
+  onUserScroll = (value) => {
+    // react-scrollbar executes this function
+    // at the start, before user has scrolled
+    // so check for top position in the value
+    // before setting the state
+    if(!value.topPosition) return;
+    console.log(value)
+    this.setState({ userIsScrolling: true });
+  };
+
   render() {
     return (
       <Wrapper show={this.props.show} height={this.props.height}>
@@ -31,10 +54,23 @@ class MessagesContainer extends Component {
             icon="up-arrow"
           />
         </HeaderButton>
-        <MessageList
-          messages={this.props.messages}
-          participant={this.props.participant}
-        />
+
+        <div>
+          <ScrollArea
+            speed={0.8}
+            className="area"
+            contentClassName="content"
+            horizontal={false}
+            onScroll={this.onUserScroll}
+          >
+            <MessageList
+              userIsScrolling={this.state.userIsScrolling}
+              messages={this.props.messages}
+              participant={this.props.participant}
+            />
+          </ScrollArea>
+          <AddMessage participant={this.props.participant} />
+        </div>
       </Wrapper>
     );
   }

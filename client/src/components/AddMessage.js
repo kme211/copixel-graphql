@@ -25,7 +25,6 @@ const AddMessage = ({ mutate, match, participant }) => {
         },
         update: (store, { data: { addMessage } }) => {
           console.log('update', addMessage)
-          debugger;
           // Read the data from the cache for this query.
           const data = store.readQuery({
             query: drawingDetailsQuery,
@@ -47,7 +46,6 @@ const AddMessage = ({ mutate, match, participant }) => {
             },
             data
           });
-          debugger;
         }
       });
       evt.target.value = "";

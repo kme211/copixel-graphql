@@ -4,9 +4,9 @@ const Schema = mongoose.Schema;
 // User
 
 const userSchema = new Schema({
-  id: {
+  auth0UserId: {
     type: String,
-    required: "Please supply an id!"
+    required: "Please supply an auth0UserId!"
   },
   email: {
     type: String,
@@ -78,12 +78,21 @@ drawingSchema.virtual("messages", {
 });
 
 function autopopulate(next) {
-  this.populate("sections");
+  this.populate("sections messages");
   next();
 }
 
-drawingSchema.pre("find", autopopulate);
-drawingSchema.pre("findOne", autopopulate);
+function autopopulate(fieldStr) {
+  return function(next) {
+    this.populate(fieldStr);
+    next();
+  };
+}
+
+const autopopulateDrawingSchema = autopopulate("sections messages");
+
+drawingSchema.pre("find", autopopulateDrawingSchema);
+drawingSchema.pre("findOne", autopopulateDrawingSchema);
 
 drawingSchema.methods.getNeighborsOfSection = function(sectionX, sectionY) {
   console.log("getNeighborsOfSection", sectionX, sectionY);
@@ -216,6 +225,15 @@ const messageSchema = new Schema({
     required: "You must supply text for a Message!"
   }
 });
+
+messageSchema.methods.saveAndPopulate = function() {
+  return this.save().then(() => this.populate("author").execPopulate());
+};
+
+const autopopulateMessageSchema = autopopulate("author");
+
+messageSchema.pre("find", autopopulateMessageSchema);
+messageSchema.pre("findOne", autopopulateMessageSchema);
 
 const Message = mongoose.model("Message", messageSchema);
 

@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import DrawingPreview from "./DrawingPreview";
 import NotFound from "./NotFound";
-import GetParticipantInfo from "./GetParticipantInfo";
 import DrawingBoard from "./DrawingBoard";
 import SectionOverlay from "./SectionOverlay";
 import Button from "./Button";
@@ -29,7 +28,6 @@ align-items: center;
 
 class DrawingDetails extends Component {
   state = {
-    participant: null,
     currentSection: null,
     showDrawing: false,
     showMessages: true
@@ -87,20 +85,13 @@ class DrawingDetails extends Component {
     });
   }
 
-  saveParticipant = participant => {
-    this.setState({
-      participant
-    });
-  };
-
   onCellClick = async ({ x, y }) => {
     const { data: { addSection } } = await this.props.addSectionMutation({
       variables: {
         section: {
           drawingId: this.props.match.params.drawingId,
           x,
-          y,
-          creator: this.state.participant.name
+          y
         }
       }
     });
@@ -153,8 +144,6 @@ class DrawingDetails extends Component {
 
     return (
       <div style={{ background: "rgb(234, 234, 234)" }}>
-        {!this.state.participant &&
-          <GetParticipantInfo saveParticipant={this.saveParticipant} />}
         <Motion
           defaultStyle={{
             messagesHeight: this.state.showMessages ? 15 : 3,
@@ -244,7 +233,7 @@ class DrawingDetails extends Component {
                 height={`${messagesHeight}rem`}
                 iconRotation={`rotate(${messagesIconRotation}deg)`}
                 toggleShow={this.toggleMessages}
-                participant={this.state.participant}
+                participant={this.props.user}
                 messages={drawing.messages}
               />
             </div>
@@ -255,7 +244,6 @@ class DrawingDetails extends Component {
           <Cover>
             <Body>
               <SectionOverlay
-                creator={this.state.participant.name}
                 section={this.state.currentSection}
                 sectionSizePx={drawing.sectionSizePx}
                 pixelSize={drawing.pixelSize}
@@ -287,7 +275,9 @@ export const drawingDetailsQuery = gql`
       messages {
         id
         text
-        author
+        author {
+          username
+        }
       }
     }
   }
@@ -298,7 +288,9 @@ const messagesSubscription = gql`
     messageAdded(drawingId: $drawingId) {
       id
       text
-      author
+      author {
+        username
+      }
     }
   }
 `;

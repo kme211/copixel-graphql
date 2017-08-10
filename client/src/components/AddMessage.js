@@ -7,24 +7,25 @@ import Input from "./Input";
 const AddMessage = ({ mutate, match, participant }) => {
   const handleKeyUp = evt => {
     if (evt.keyCode === 13) {
-      console.log("addMessage", participant);
+      console.log("addMessage");
       mutate({
         variables: {
           message: {
-            drawingId: match.params.drawingId,
-            text: evt.target.value,
-            author: participant.name
+            drawing: match.params.drawingId,
+            text: evt.target.value
           }
         },
         optimisticResponse: {
           addMessage: {
             text: evt.target.value,
-            author: participant.name,
+            author: participant,
             id: Math.round(Math.random() * -1000000),
             __typename: "Message"
           }
         },
         update: (store, { data: { addMessage } }) => {
+          console.log('update', addMessage)
+          debugger;
           // Read the data from the cache for this query.
           const data = store.readQuery({
             query: drawingDetailsQuery,
@@ -46,6 +47,7 @@ const AddMessage = ({ mutate, match, participant }) => {
             },
             data
           });
+          debugger;
         }
       });
       evt.target.value = "";
@@ -69,7 +71,9 @@ const addMessageMutation = gql`
     addMessage(message: $message) {
       id
       text
-      author
+      author {
+        username
+      }
     }
   }
 `;

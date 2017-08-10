@@ -7,9 +7,10 @@ import { resolvers } from './resolvers';
 
 const typeDefs = `
 type User {
+  _id: ID!
   auth0UserId: ID!
-  email: String
-  username: String
+  email: String!
+  username: String!
 }
 
 type Drawing {
@@ -33,8 +34,7 @@ input DrawingInput {
 }
 
 input MessageInput{
-  drawingId: ID!
-  author: String!
+  drawing: ID!
   text: String!
 }
 
@@ -60,10 +60,9 @@ input PixelInput {
 }
 
 input SectionInput {
-  drawingId: ID!
+  drawing: ID!
   x: Int!
   y: Int!
-  creator: String
   pixels: [PixelInput]
 }
 
@@ -75,7 +74,7 @@ type Pixel {
 
 type Message {
   id: ID!
-  author: String!
+  author: User!
   text: String
 }
 
@@ -88,6 +87,7 @@ type Neighbor {
 
 # This type specifies the entry points into our API
 type Query {
+  user: User
   drawings: [Drawing]
   drawing(id: ID!): Drawing
   neighbors(drawingId: ID!, sectionX: Int!, sectionY: Int!): [Neighbor]
@@ -95,9 +95,10 @@ type Query {
 
 # The mutation root type, used to define all mutations
 type Mutation {
-  addDrawing(drawing: DrawingInput!, token: String!): Drawing
-  addMessage(message: MessageInput!, token: String!): Message
-  addSection(section: SectionInput!, token: String!): Section
+  createUser(username: String!, email: String!): User
+  addDrawing(drawing: DrawingInput!): Drawing
+  addMessage(message: MessageInput!): Message
+  addSection(section: SectionInput!): Section
   addPixelsToSection(sectionId: ID!, pixels: [PixelInput!]!): Section
 }
 

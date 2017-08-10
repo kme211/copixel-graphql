@@ -4,6 +4,7 @@
 
 
 ### going for something like this
+https://github.com/graphcool-examples/react-graphql
 https://www.graph.cool/docs/tutorials/react-apollo-auth0-pheiph4ooj/?r#4.-try-it-out-yourself
 https://auth0.com/blog/building-an-instagram-clone-with-graphql-and-auth0/
 

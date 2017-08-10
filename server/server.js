@@ -33,29 +33,24 @@ const server = express();
 server.use("*", cors({ origin: "*" }));
 
 const jwtCheck = jwt({
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: `https://${process.env.AUTH_DOMAIN}/.well-known/jwks.json`
-  }),
-
-  // Validate the audience and the issuer.
-  audience: "http://localhost:3000/api", // had to set this up in the APIs section of Auth0
+  secret: process.env.AUTH_SECRET,
+  credentialsRequired: false,
   issuer: `https://${process.env.AUTH_DOMAIN}/`,
-  algorithms: ["RS256"]
+  algorithms: ["HS256"]
 });
 
 const getMongoUser = async (req, res, next) => {
-  const id = req.user.sub.split("|")[1];
-  const user = await User.findOne({
-    id
-  });
-  req.user = user;
+  if (req.user) {
+    const auth0UserId = req.user.sub.split("|")[1];
+    const user = await User.findOne({
+      auth0UserId
+    });
+    req.user = Object.assign(user ? user.toObject() : {}, { auth0UserId });
+  }
   next();
 };
 
-server.use(jwtCheck, getMongoUser);
+server.use("/graphql", jwtCheck, getMongoUser);
 
 server.use(
   "/graphql",

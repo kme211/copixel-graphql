@@ -1,13 +1,15 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { withRouter, Redirect } from "react-router-dom";
 import { graphql, gql } from "react-apollo";
 import Button from "./Button";
 import Input from "./Input";
+import Inner from "./Inner";
 
 class CreateUser extends React.Component {
   static propTypes = {
-    createUser: React.PropTypes.func.isRequired,
-    data: React.PropTypes.object.isRequired
+    createUser: PropTypes.func.isRequired,
+    data: PropTypes.object.isRequired
   };
 
   state = {
@@ -17,7 +19,7 @@ class CreateUser extends React.Component {
 
   onFormChange = e => {
     this.setState({
-      [e.target.name]: value
+      [e.target.name]: e.target.value
     });
   };
 
@@ -25,11 +27,11 @@ class CreateUser extends React.Component {
     // TODO: Add validation
     const variables = {
       email: this.state.email,
-      name: this.state.name
+      username: this.state.username
     };
 
     try {
-      const response = await this.props.createUser({ variables });
+      await this.props.createUser({ variables });
       this.props.history.replace("/");
     } catch (e) {
       console.error(e);
@@ -58,33 +60,37 @@ class CreateUser extends React.Component {
     }
 
     return (
-      <div>
-        <div style={{ maxWidth: 400 }}>
-          <Input
-            value={this.state.email}
-            placeholder="Email"
-            id="Email"
-            onChange={this.onFormChange}
-          />
-          <Input
-            value={this.state.name}
-            placeholder="Username"
-            id="username"
-            onChange={this.onFormChange}
-          />
+      <Inner>
+        <Input
+          type="email"
+          value={this.state.email}
+          placeholder="Email"
+          id="email"
+          label="Email"
+          onChange={this.onFormChange}
+        />
+        <Input
+          type="text"
+          value={this.state.username}
+          placeholder="Username"
+          id="username"
+          label="Username"
+          onChange={this.onFormChange}
+        />
 
-          {this.state.name &&
-            <button onClick={this.createUser}>Sign up</button>}
-        </div>
-      </div>
+        {this.state.username &&
+          this.state.email &&
+          <Button onClick={this.createUser}>Sign up</Button>}
+      </Inner>
     );
   }
 }
 
 const createUser = gql`
   mutation ($username: String!, $email: String!){
-    createUser(authProvider: {auth0: {idToken: $idToken}}, name: $name, emailAddress: $emailAddress, emailSubscription: $emailSubscription) {
-      id
+    createUser(username: $username, email: $email) {
+      _id
+      username
     }
   }
 `;
@@ -92,7 +98,8 @@ const createUser = gql`
 const userQuery = gql`
   query {
     user {
-      id
+      _id
+      username
     }
   }
 `;

@@ -1,22 +1,18 @@
 import { PubSub } from "graphql-subscriptions";
 import { withFilter } from "graphql-subscriptions";
-import { User, Drawing, Section } from "./models";
-import { promisify } from "util";
+import { User, Drawing, Section, Message } from "./models";
 
 const pubsub = new PubSub();
 
 export const resolvers = {
   Query: {
-    user: async (root, args, { error, user }) => {
-      console.log("getUser", root, args);
-      if (error) console.error(error);
-      throw new Error(error);
-
-      console.log("user", user);
-      return user;
+    user: async (root, args, { user }) => {
+      console.log("getUser", root, user);
+      return user.username ? user : null;
     },
     drawings: async () => {
       const drawings = await Drawing.find();
+      console.log("drawings", drawings);
       return drawings;
     },
     drawing: async (root, { id }) => {
@@ -36,65 +32,56 @@ export const resolvers = {
     }
   },
   Mutation: {
-    addDrawing: async (root, { drawing: options }, { error, user }) => {
+    createUser: async (root, { username, email }, context) => {
+      console.log("createUser", username, email);
+      console.log("context", context);
+
+      const newUser = {
+        username,
+        email,
+        auth0UserId: context.user.auth0UserId
+      };
+
+      const user = await new User(newUser).save();
+      return user;
+    },
+    addDrawing: async (root, { drawing: options }, { user }) => {
       console.log("addDrawing", options);
 
-      if (error) console.error(error);
-      throw new Error(error);
-
-      const newDrawing = {
-        creator: user.id,
-        width: options.width,
-        height: options.height,
-        name: options.name
-      };
-      const drawing = await new Drawing(newDrawing).save();
+      const drawing = await new Drawing(
+        Object.assign({}, options, { creator: user._id })
+      ).save();
       return drawing;
     },
-    addMessage: async (root, { message: options }, { error, user }) => {
+    addMessage: async (root, { message: options }, { user }) => {
       console.log("addMessage", options);
 
-      const { error, user } = verifyToken(token);
-      if (error) console.error(error);
-      throw new Error(error);
-
-      const newMessage = {
-        text: message.text,
-        author: user.id, // grab author ID from token
-        drawing: message.drawingId
-      };
-
-      drawing.messages.push(newMessage);
-      const message = await new Message(newMessage).save();
+      const message = await new Message(
+        Object.assign({}, options, { author: user._id })
+      ).saveAndPopulate();
 
       pubsub.publish("messageAdded", {
         messageAdded: message,
-        drawingId: message.drawingId
+        drawingId: message.drawing
       });
 
       return message;
     },
-    addSection: async (root, { section: options }) => {
+    addSection: async (root, { section: options }, { user }) => {
       console.log("addSection", options);
-
-      const { error, user } = verifyToken(token);
-      if (error) console.error(error);
-      throw new Error(error);
-
-      const newSection = {
-        x: options.x,
-        y: options.y,
-        status: "IN_PROGRESS",
-        creator: user.id // grab creator ID from token
-      };
 
       // TODO: Check if section already exists
       // Throw error if it does
-      const section = await new Section(newSection).save();
+      const section = await new Section(
+        Object.assign({}, options, {
+          status: "IN_PROGRESS",
+          creator: user._id
+        })
+      ).save();
 
       pubsub.publish("sectionUpdated", {
         sectionUpdated: section,
-        drawingId: section.drawingId
+        drawingId: section.drawing
       });
 
       return section;

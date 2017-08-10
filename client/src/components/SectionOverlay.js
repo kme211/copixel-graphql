@@ -1,8 +1,14 @@
 import React, { Component } from "react";
 import { graphql, gql, compose } from "react-apollo";
+import PropTypes from "prop-types";
 import Editor from "./Editor";
 
 class SectionOverlay extends Component {
+  static propTypes = {
+    sectionSizePx: PropTypes.number.isRequired,
+    pixelSize: PropTypes.number.isRequired
+  };
+
   state = {
     pixels: null
   };
@@ -28,14 +34,14 @@ class SectionOverlay extends Component {
     console.log("SectionOverlay data", this.props.data);
     return (
       <div>
-          <Editor
-            neighbors={neighbors}
-            x={section.x}
-            y={section.y}
-            sectionSizePx={this.props.sectionSizePx}
-            pixelSize={this.props.pixelSize}
-            savePixels={this.savePixels}
-          />
+        <Editor
+          neighbors={neighbors}
+          x={section.x}
+          y={section.y}
+          sectionSizePx={this.props.sectionSizePx}
+          pixelSize={this.props.pixelSize}
+          savePixels={this.savePixels}
+        />
       </div>
     );
   }

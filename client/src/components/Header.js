@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
 import Inner from "./Inner";
@@ -12,15 +13,15 @@ const Nav = styled.nav`
 
 const StyledNavLink = styled(NavLink)`
     text-decoration: none;
-    color: #FC8A15;
     display: block;
     transition: all 0.4s;
     border: 1px solid transparent;
+    color: inherit;
 `;
 
 const HomeLink = styled(Link)`
     text-decoration: none;
-    color: #FC8A15;
+    color: inherit;
 `;
 
 const activeStyle = {
@@ -37,22 +38,29 @@ const Wrapper = styled.div`
   background-color: #222;
   font-family: 'VT323', monospace;
   font-size: 2rem;
+  color: #FC8A15;
 `;
 
-const clientId = process.env.CLIENT_ID;
-const domain = process.env.DOMAIN;
-
-const Header = (props) => (
+const Header = props => (
   <Wrapper>
     <Inner>
       <Nav>
         <HomeLink to="/">copixel</HomeLink>
-        {!props.isLoggedIn && <LoginButton clientId={clientId} domain={domain}  />}
-        {props.isLoggedIn && <button onClick={this.props.logout}>Logout</button>}
-        {props.isLoggedIn && <StyledNavLink to="/add" activeStyle={activeStyle}>add</StyledNavLink>}
+        {!props.isLoggedIn() &&
+          <LoginButton/>}
+        {props.isLoggedIn() && <button onClick={props.logout}>Logout</button>}
+        {props.isLoggedIn() &&
+          <StyledNavLink to="/add" activeStyle={activeStyle}>
+            add
+          </StyledNavLink>}
       </Nav>
     </Inner>
   </Wrapper>
-)
+);
+
+Header.propTypes = {
+  isLoggedIn: PropTypes.func.isRequired,
+  logout: PropTypes.func.isRequired
+};
 
 export default Header;

@@ -35,7 +35,7 @@ const MessageList = ({ messages, participant }) => {
         {messages.map(message => (
           <Message key={message.id} optimistic={message.id < 0}>
 
-            <div><Author>{message.author}</Author>: {message.text}</div>
+            <div><Author>{message.author.username}</Author>: {message.text}</div>
           </Message>
         ))}
       </ScrollArea>

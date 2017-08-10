@@ -9,8 +9,10 @@ import { schema } from "./src/schema";
 import { execute, subscribe } from "graphql";
 import { createServer } from "http";
 import { SubscriptionServer } from "subscriptions-transport-ws";
-import verifyToken from "./utils/verifyToken";
+const jwt = require("express-jwt");
+const jwksRsa = require("jwks-rsa");
 const mongoUrl = process.env.DATABASE;
+const User = mongoose.model("User");
 
 const connectWithRetry = function() {
   return mongoose.connect(mongoUrl, function(err) {
@@ -30,13 +32,40 @@ const server = express();
 
 server.use("*", cors({ origin: "*" }));
 
+const jwtCheck = jwt({
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://${process.env.AUTH_DOMAIN}/.well-known/jwks.json`
+  }),
+
+  // Validate the audience and the issuer.
+  audience: "http://localhost:3000/api", // had to set this up in the APIs section of Auth0
+  issuer: `https://${process.env.AUTH_DOMAIN}/`,
+  algorithms: ["RS256"]
+});
+
+const getMongoUser = async (req, res, next) => {
+  const id = req.user.sub.split("|")[1];
+  const user = await User.findOne({
+    id
+  });
+  req.user = user;
+  next();
+};
+
+server.use(jwtCheck, getMongoUser);
+
 server.use(
   "/graphql",
   bodyParser.json(),
-  graphqlExpress(request => ({
-    context: getUser(request),
-    schema
-  }))
+  graphqlExpress(req => {
+    return {
+      context: { user: req.user },
+      schema
+    };
+  })
 );
 
 server.use(

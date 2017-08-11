@@ -8,7 +8,8 @@ class LoginButton extends Component {
 
     this._lock = new Auth0Lock(
       process.env.REACT_APP_CLIENT_ID,
-      process.env.REACT_APP_AUTH_DOMAIN
+      process.env.REACT_APP_AUTH_DOMAIN,
+      { auth: { redirectUrl: "http://localhost:7777/callback", responseType: 'token' }}
     );
   }
 
@@ -23,6 +24,7 @@ class LoginButton extends Component {
   }
 
   _showLogin = () => {
+    window.localStorage.setItem("loggedInFrom", window.location.pathname);
     this._lock.show();
   };
 

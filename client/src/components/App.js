@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import styled from "styled-components";
+import Callback from "./Callback";
 import DrawingsListWithData from "./DrawingsListWithData";
 import AddDrawing from "./AddDrawing";
 import NotFound from "./NotFound";
@@ -28,11 +29,14 @@ const Wrapper = styled.div`
 
 class App extends Component {
   logout = () => {
+    console.warn('logout')
     window.localStorage.removeItem("auth0IdToken");
     window.location.reload();
   };
   isLoggedIn = () => {
     const token = window.localStorage.getItem("auth0IdToken");
+    console.log('token', token)
+    if(token) console.log('isTokenExpired(token)', isTokenExpired(token))
     if (token && isTokenExpired(token)) return this.logout();
     return !!this.props.data.user;
   };
@@ -56,6 +60,7 @@ class App extends Component {
             {!this.props.data.loading &&
               <Switch>
                 <Route exact path="/" component={DrawingsListWithData} />
+                <Route exact path="/callback" component={Callback} />
                 <Route
                   exact
                   path="/signup"

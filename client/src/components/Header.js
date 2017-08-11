@@ -19,14 +19,15 @@ const Wrapper = styled.div`
   background: white;
   width: 100%;
   height: 3rem;
-  line-height: 3rem;
+  line-height: 1rem;
   background-color: #222;
-  font-family: 'VT323', monospace;
-  font-size: 2rem;
-  color: #FC8A15;
+  font-family: 'Archivo', sans-serif;
+  font-size: 1rem;
+  color: #eee;
 
   a,
   button {
+    
     display: inline-block;
     text-decoration: none;
     outline: none;

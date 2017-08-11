@@ -92,5 +92,5 @@ const createUser = gql`
 `;
 
 export default graphql(createUser, {
-    name: "createUser"
-  })(withRouter(CreateUser));
+  name: "createUser"
+})(withRouter(CreateUser));

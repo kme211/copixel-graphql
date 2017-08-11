@@ -6,14 +6,19 @@ class LoginButton extends Component {
   constructor(props) {
     super(props);
 
-    this._lock = new Auth0Lock(process.env.REACT_APP_CLIENT_ID, process.env.REACT_APP_AUTH_DOMAIN);
+    this._lock = new Auth0Lock(
+      process.env.REACT_APP_CLIENT_ID,
+      process.env.REACT_APP_AUTH_DOMAIN
+    );
   }
 
   componentDidMount() {
-    this._lock.on("authenticated", authResult => {
-      console.log("authenticated", authResult);
+    this._lock.on("authenticated", async authResult => {
       window.localStorage.setItem("auth0IdToken", authResult.idToken);
-      this.props.history.push(`/signup`);
+      window.localStorage.setItem("auth0AccessToken", authResult.accessToken);
+      const { data: { user } } = await this.props.refetchUser();
+      if (user) this.props.history.push("/");
+      else this.props.history.push(`/signup`);
     });
   }
 
@@ -23,11 +28,9 @@ class LoginButton extends Component {
 
   render() {
     return (
-      <div>
-        <span onClick={this._showLogin}>
-          Log in with Auth0
-        </span>
-      </div>
+      <button onClick={this._showLogin}>
+        Log in
+      </button>
     );
   }
 }

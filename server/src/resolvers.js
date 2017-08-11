@@ -8,11 +8,10 @@ export const resolvers = {
   Query: {
     user: async (root, args, { user }) => {
       console.log("getUser", root, user);
-      return user.username ? user : null;
+      return user && user.username ? user : null;
     },
     drawings: async () => {
       const drawings = await Drawing.find();
-      console.log("drawings", drawings);
       return drawings;
     },
     drawing: async (root, { id }) => {

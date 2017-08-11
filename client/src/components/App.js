@@ -9,6 +9,8 @@ import CreateUser from "./CreateUser";
 import Inner from "./Inner";
 import Header from "./Header";
 import { gql, graphql } from "react-apollo";
+import LoadingSpinner from "./LoadingSpinner";
+import { isTokenExpired } from "../utils/jwtHelper";
 
 const Wrapper = styled.div`
   font-family: sans-serif;
@@ -30,22 +32,37 @@ class App extends Component {
     window.location.reload();
   };
   isLoggedIn = () => {
-    console.log("isLoggedIn", this.props.data.user)
+    const token = window.localStorage.getItem("auth0IdToken");
+    if (token && isTokenExpired(token)) return this.logout();
     return !!this.props.data.user;
   };
-  render() {
-    if (this.props.data.loading) {
-      return <div>Loading</div>;
-    }
-    return (
 
-        <BrowserRouter>
-          <Wrapper>
-            <Header isLoggedIn={this.isLoggedIn} logout={this.logout} />
-            <Inner>
+  refetchUser = () => {
+    return this.props.data.refetch();
+  };
+
+  render() {
+    return (
+      <BrowserRouter>
+        <Wrapper>
+          <Header
+            loading={this.props.data.loading}
+            isLoggedIn={this.isLoggedIn}
+            logout={this.logout}
+            refetchUser={this.refetchUser}
+          />
+          <Inner>
+            {this.props.data.loading && <LoadingSpinner />}
+            {!this.props.data.loading &&
               <Switch>
                 <Route exact path="/" component={DrawingsListWithData} />
-                <Route exact path="/signup" component={CreateUser} />
+                <Route
+                  exact
+                  path="/signup"
+                  render={props => (
+                    <CreateUser {...props} user={this.props.data.user} />
+                  )}
+                />
                 <Route
                   path="/add"
                   render={props => (
@@ -59,16 +76,16 @@ class App extends Component {
                   )}
                 />
                 <Route component={NotFound} />
-              </Switch>
-            </Inner>
-          </Wrapper>
-        </BrowserRouter>
-      
+              </Switch>}
+
+          </Inner>
+        </Wrapper>
+      </BrowserRouter>
     );
   }
 }
 
-const userQuery = gql`
+export const userQuery = gql`
   query userQuery {
     user {
       _id

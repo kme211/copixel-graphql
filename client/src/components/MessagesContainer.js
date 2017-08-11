@@ -21,25 +21,16 @@ const HeaderButton = styled.h2`
   cursor: pointer;
 `;
 
-const ScrollWrapper = styled.div`
-  width: 100%;
-  padding: 0.5rem 1rem;
-  font-size: 0.85rem;
-  & .area {
-    height: 9rem;
-  }
-`;
-
 class MessagesContainer extends Component {
   state = { userIsScrolling: false };
 
-  onUserScroll = (value) => {
+  onUserScroll = value => {
     // react-scrollbar executes this function
     // at the start, before user has scrolled
     // so check for top position in the value
     // before setting the state
-    if(!value.topPosition) return;
-    console.log(value)
+    if (!value.topPosition) return;
+    console.log(value);
     this.setState({ userIsScrolling: true });
   };
 

@@ -18,11 +18,11 @@ const DrawingLink = styled(Link)`
 `;
 
 const DrawingsList = ({ data: { loading, error, drawings } }) => {
-  if (loading) {
-    return <p>Loading ...</p>;
+  if (!drawings && loading) {
+    return <p>Loading...</p>;
   }
   if (error) {
-    return (<div><p>{error.message}</p><pre>{error.stack}</pre></div>);
+    return (<div>{error.message}</div>);
   }
 
   const zone = moment.tz.guess();

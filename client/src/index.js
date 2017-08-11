@@ -23,7 +23,7 @@ networkInterface.use([
       if (!req.options.headers) {
         req.options.headers = {};
       }
-
+      console.info("Apply middleware", localStorage.getItem("auth0IdToken"))
       if (localStorage.getItem("auth0IdToken")) {
         req.options.headers.authorization = `Bearer ${localStorage.getItem("auth0IdToken")}`;
       }
@@ -41,27 +41,14 @@ const networkInterfaceWithSubscriptions = addGraphQLSubscriptions(
   wsClient
 );
 
-function dataIdFromObject(result) {
-  if (result.__typename) {
-    if (result.id !== undefined) {
-      return `${result.__typename}:${result.id}`;
-    }
-  }
-  return null;
-}
-
 const client = new ApolloClient({
   networkInterface: networkInterfaceWithSubscriptions,
   customResolvers: {
     Query: {
-      drawing: (_, args) => {
-        return toIdValue(
-          dataIdFromObject({ __typename: "Drawing", id: args["id"] })
-        );
-      }
+      drawing: (_, args) => toIdValue(client.dataIdFromObject({ __typename: 'Drawing', id: args.id })),
+      user: (_, args) => toIdValue(client.dataIdFromObject({ __typename: 'User', id: args._id }))
     }
-  },
-  dataIdFromObject
+  }
 });
 
 

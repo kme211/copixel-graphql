@@ -11,22 +11,7 @@ const Nav = styled.nav`
   align-items: center;
 `;
 
-const StyledNavLink = styled(NavLink)`
-    text-decoration: none;
-    display: block;
-    transition: all 0.4s;
-    border: 1px solid transparent;
-    color: inherit;
-`;
-
-const HomeLink = styled(Link)`
-    text-decoration: none;
-    color: inherit;
-`;
-
 const activeStyle = {
-  border: "1px solid #FC8A15",
-  background: "#FC8A15",
   color: "white"
 };
 
@@ -39,20 +24,48 @@ const Wrapper = styled.div`
   font-family: 'VT323', monospace;
   font-size: 2rem;
   color: #FC8A15;
+
+  a,
+  button {
+    display: inline-block;
+    text-decoration: none;
+    outline: none;
+    border: none;
+    font-size: inherit;
+    font-family: inherit;
+    background: transparent;
+    color: inherit;
+    margin-right: 1rem;
+    cursor: pointer;
+    transition: color 0.4s;
+  }
+
+  a:hover, button:hover {
+    color: white;
+  }
+
+  a:last-child,
+  button:last-child {
+    margin-right: 0;
+  }
 `;
 
 const Header = props => (
   <Wrapper>
     <Inner>
       <Nav>
-        <HomeLink to="/">copixel</HomeLink>
-        {!props.isLoggedIn() &&
-          <LoginButton/>}
-        {props.isLoggedIn() && <button onClick={props.logout}>Logout</button>}
-        {props.isLoggedIn() &&
-          <StyledNavLink to="/add" activeStyle={activeStyle}>
-            add
-          </StyledNavLink>}
+        <Link to="/">copixel</Link>
+
+        <div>
+          {props.isLoggedIn() &&
+            <NavLink to="/add" activeStyle={activeStyle}>
+              add
+            </NavLink>}
+          {!props.isLoggedIn() &&
+            !props.loading &&
+            <LoginButton refetchUser={props.refetchUser} />}
+          {props.isLoggedIn() && <button onClick={props.logout}>logout</button>}
+        </div>
       </Nav>
     </Inner>
   </Wrapper>

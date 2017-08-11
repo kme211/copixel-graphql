@@ -31,6 +31,7 @@
     "graphql-tools": "^0.10.0",
     "html-webpack-plugin": "2.29.0",
     "jest": "20.0.4",
+    "jwt-decode": "^2.2.0",
     "moment-timezone": "^0.5.13",
     "object-assign": "4.1.1",
     "postcss-flexbugs-fixes": "3.0.0",

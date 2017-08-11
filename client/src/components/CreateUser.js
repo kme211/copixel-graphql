@@ -31,7 +31,7 @@ class CreateUser extends React.Component {
     };
 
     try {
-      await this.props.createUser({ variables });
+      await this.props.createUserMutation({ variables });
       this.props.history.replace("/");
     } catch (e) {
       console.error(e);
@@ -40,13 +40,9 @@ class CreateUser extends React.Component {
   };
 
   render() {
-    if (this.props.data.loading) {
-      return <div>Loading</div>;
-    }
-
     // redirect if user is logged in or did not finish Auth0 Lock dialog
     if (
-      this.props.data.user ||
+      this.props.user ||
       window.localStorage.getItem("auth0IdToken") === null
     ) {
       console.warn("not a new user or already logged in");
@@ -95,15 +91,6 @@ const createUser = gql`
   }
 `;
 
-const userQuery = gql`
-  query {
-    user {
-      _id
-      username
-    }
-  }
-`;
-
-export default graphql(createUser, { name: "createUser" })(
-  graphql(userQuery)(withRouter(CreateUser))
-);
+export default graphql(createUser, {
+    name: "createUser"
+  })(withRouter(CreateUser));

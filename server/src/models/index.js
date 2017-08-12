@@ -53,6 +53,10 @@ const drawingSchema = new Schema({
     type: Number,
     default: 10
   },
+  status: {
+    type: String,
+    default: "IN_PROGRESS"
+  },
   height: {
     type: Number,
     min: 1,
@@ -69,6 +73,11 @@ drawingSchema.virtual("sections", {
   ref: "Section",
   localField: "_id",
   foreignField: "drawing"
+});
+
+drawingSchema.virtual("sectionsNotStarted").get(function() {
+  const numTotalSections = this.height * this.width;
+  return numTotalSections - this.sections.length;
 });
 
 drawingSchema.virtual("messages", {
@@ -199,6 +208,19 @@ const sectionSchema = new Schema({
   },
   pixels: Schema.Types.Mixed
 });
+
+sectionSchema.methods.saveAndPopulate = function() {
+  return this.save().then(() => this.populate("creator").execPopulate());
+};
+
+sectionSchema.methods.execAndPopulate = function() {
+  return this.exec().then(() => this.populate("creator").execPopulate());
+};
+
+const autopopulateSectionSchema = autopopulate("creator");
+
+sectionSchema.pre("find", autopopulateSectionSchema);
+sectionSchema.pre("findOne", autopopulateSectionSchema);
 
 const Section = mongoose.model("Section", sectionSchema);
 

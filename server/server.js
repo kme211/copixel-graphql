@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import mongoose from "mongoose";
 import "./src/models";
+import db from "./db";
 import { schema } from "./src/schema";
 import { execute, subscribe } from "graphql";
 import { createServer } from "http";
@@ -13,19 +14,6 @@ const jwt = require("express-jwt");
 const jwksRsa = require("jwks-rsa");
 const mongoUrl = process.env.DATABASE;
 const User = mongoose.model("User");
-
-const connectWithRetry = function() {
-  return mongoose.connect(mongoUrl, function(err) {
-    if (err) {
-      console.error(
-        "Failed to connect to mongo on startup - retrying in 5 sec",
-        err
-      );
-      setTimeout(connectWithRetry, 5000);
-    }
-  });
-};
-connectWithRetry();
 
 const PORT = 4000;
 const server = express();

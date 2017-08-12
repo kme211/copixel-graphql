@@ -4,14 +4,14 @@ const Button = styled.button`
   display: block;
   width: 100%;
   padding: 10px;
-  background: #1EE494;
+  background: #222;
   border: none;
   color: white;
   font-size: inherit;
   transition: background 0.4s;
   cursor: pointer;
   &:hover {
-    background: #009378;
+    background: #302f2f;
   }
 `;
 

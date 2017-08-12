@@ -4,23 +4,21 @@ import Icon from "./Icon";
 
 const Wrapper = styled.div`
   position: relative;
-  margin-bottom: 16px;
+  margin: 1rem 0;
 `;
 
-const Input = styled.input`
-  display: none;
-`;
+const Input = styled.input`display: none;`;
 
 const labelStyles = ({ side, active }) => css`
   cursor: pointer;
-  color: ${active ? "white" : "rgba(0,0,0,0.2)"};
+  color: ${active ? "white" : "#ccc"};
   width: 60px;
   line-height: 50px;
   transition: all 0.2s ease;
   order: ${side === "left" ? 0 : 3};
 `;
 
-const Label = styled.label`${labelStyles}`;
+const Label = styled.label`${labelStyles};`;
 
 const Switch = styled.div`
   display: flex;
@@ -28,7 +26,7 @@ const Switch = styled.div`
   width: 150px;
   height: 50px;
   text-align: center;
-  background: #1EE494;
+  background: #222;
   transition: all 0.2s ease;
 `;
 
@@ -46,7 +44,7 @@ const Toggle = ({
   icon2,
   checkedItem,
   onChange
-}) => (
+}) =>
   <Wrapper>
     <Input
       onChange={onChange}
@@ -77,7 +75,6 @@ const Toggle = ({
         size={20}
       />
     </Switch>
-  </Wrapper>
-);
+  </Wrapper>;
 
 export default Toggle;

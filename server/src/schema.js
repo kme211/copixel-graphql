@@ -23,6 +23,8 @@ type Drawing {
   sectionSizePx: Int!
   created: String
   sections: [Section]
+  sectionsNotStarted: Int
+  status: DRAWING_STATUS
   messages: [Message]!
 }
 
@@ -38,6 +40,11 @@ input MessageInput{
   text: String!
 }
 
+enum DRAWING_STATUS {
+  COMPLETED
+  IN_PROGRESS
+}
+
 enum SECTION_STATUS {
   IN_PROGRESS
   COMPLETED
@@ -47,7 +54,7 @@ type Section {
   x: Int!
   y: Int!
   id: ID!
-  creator: String
+  creator: User
   pixels: [Pixel]
   neighbors: [Neighbor]
   status: SECTION_STATUS!
@@ -88,7 +95,7 @@ type Neighbor {
 # This type specifies the entry points into our API
 type Query {
   user: User
-  drawings: [Drawing]
+  drawings(status: DRAWING_STATUS): [Drawing]
   drawing(id: ID!): Drawing
   neighbors(drawingId: ID!, sectionX: Int!, sectionY: Int!): [Neighbor]
 }

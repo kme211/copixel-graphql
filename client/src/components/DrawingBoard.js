@@ -21,9 +21,7 @@ const Row = styled.div`
   justify-content: center;
 `;
 
-const Wrapper = styled.div`
-  position: relative;
-`;
+const Wrapper = styled.div`position: relative;`;
 
 class DrawingBoard extends Component {
   render() {
@@ -39,10 +37,19 @@ class DrawingBoard extends Component {
           isNeighboringSection(x, y)
         );
         const status = section ? section.status : "NOT_STARTED";
-        let enabled = status === "NOT_STARTED"
-          ? neighboringSections.length &&
+        let enabled =
+          status === "NOT_STARTED"
+            ? neighboringSections.length &&
               neighboringSections.every(s => s.status === "COMPLETED")
-          : false;
+            : false;
+        if (section) console.log("section", section);
+        if (
+          status === "IN_PROGRESS" &&
+          section.creator._id === this.props.user._id
+        ) {
+          console.log("BELONGS TO CURRENT USER");
+          enabled = true;
+        }
         if (!this.props.sections.length) enabled = true;
         const styles = this.props.styles[i++];
         const cell = (
@@ -78,6 +85,7 @@ class DrawingBoard extends Component {
 }
 
 DrawingBoard.propTypes = {
+  user: PropTypes.object.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
   cellSize: PropTypes.number.isRequired

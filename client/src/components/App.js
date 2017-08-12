@@ -14,29 +14,26 @@ import LoadingSpinner from "./LoadingSpinner";
 import { isTokenExpired } from "../utils/jwtHelper";
 
 const Wrapper = styled.div`
-  font-family: sans-serif;
+  font-family: 'Archivo', sans-serif;
   font-size: 16px;
   *,
   & {
     box-sizing: border-box;
   }
 
-  .mono {
-    font-family: 'VT323', monospace;
-    font-size: 1.25rem;
+  p {
+    margin: 0.5rem 0;
   }
 `;
 
 class App extends Component {
   logout = () => {
-    console.warn('logout')
+    console.warn("logout");
     window.localStorage.removeItem("auth0IdToken");
     window.location.reload();
   };
   isLoggedIn = () => {
     const token = window.localStorage.getItem("auth0IdToken");
-    console.log('token', token)
-    if(token) console.log('isTokenExpired(token)', isTokenExpired(token))
     if (token && isTokenExpired(token)) return this.logout();
     return !!this.props.data.user;
   };
@@ -59,30 +56,38 @@ class App extends Component {
             {this.props.data.loading && <LoadingSpinner />}
             {!this.props.data.loading &&
               <Switch>
-                <Route exact path="/" component={DrawingsListWithData} />
+                <Route
+                  exact
+                  path="/"
+                  render={props =>
+                    <DrawingsListWithData
+                      {...props}
+                      isLoggedIn={this.isLoggedIn}
+                    />}
+                />
                 <Route exact path="/callback" component={Callback} />
                 <Route
                   exact
                   path="/signup"
-                  render={props => (
-                    <CreateUser {...props} user={this.props.data.user} />
-                  )}
+                  render={props =>
+                    <CreateUser
+                      {...props}
+                      user={this.props.data.user}
+                      refetchUser={this.refetchUser}
+                    />}
                 />
                 <Route
                   path="/add"
-                  render={props => (
-                    <AddDrawing {...props} user={this.props.data.user} />
-                  )}
+                  render={props =>
+                    <AddDrawing {...props} user={this.props.data.user} />}
                 />
                 <Route
                   path="/drawing/:drawingId"
-                  render={props => (
-                    <DrawingDetails {...props} user={this.props.data.user} />
-                  )}
+                  render={props =>
+                    <DrawingDetails {...props} user={this.props.data.user} />}
                 />
                 <Route component={NotFound} />
               </Switch>}
-
           </Inner>
         </Wrapper>
       </BrowserRouter>

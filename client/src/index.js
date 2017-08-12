@@ -1,7 +1,7 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './components/App';
-import registerServiceWorker from './registerServiceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./components/App";
+import registerServiceWorker from "./registerServiceWorker";
 import {
   ApolloClient,
   ApolloProvider,
@@ -23,9 +23,10 @@ networkInterface.use([
       if (!req.options.headers) {
         req.options.headers = {};
       }
-      console.info("Apply middleware", localStorage.getItem("auth0IdToken"))
       if (localStorage.getItem("auth0IdToken")) {
-        req.options.headers.authorization = `Bearer ${localStorage.getItem("auth0IdToken")}`;
+        req.options.headers.authorization = `Bearer ${localStorage.getItem(
+          "auth0IdToken"
+        )}`;
       }
       setTimeout(next, 500);
     }
@@ -45,12 +46,20 @@ const client = new ApolloClient({
   networkInterface: networkInterfaceWithSubscriptions,
   customResolvers: {
     Query: {
-      drawing: (_, args) => toIdValue(client.dataIdFromObject({ __typename: 'Drawing', id: args.id })),
-      user: (_, args) => toIdValue(client.dataIdFromObject({ __typename: 'User', id: args._id }))
+      drawing: (_, args) =>
+        toIdValue(
+          client.dataIdFromObject({ __typename: "Drawing", id: args.id })
+        ),
+      user: (_, args) =>
+        toIdValue(client.dataIdFromObject({ __typename: "User", id: args._id }))
     }
   }
 });
 
-
-ReactDOM.render(<ApolloProvider client={client}><App /></ApolloProvider>, document.getElementById('root'));
+ReactDOM.render(
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>,
+  document.getElementById("root")
+);
 registerServiceWorker();

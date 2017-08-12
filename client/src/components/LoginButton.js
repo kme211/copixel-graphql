@@ -9,7 +9,12 @@ class LoginButton extends Component {
     this._lock = new Auth0Lock(
       process.env.REACT_APP_CLIENT_ID,
       process.env.REACT_APP_AUTH_DOMAIN,
-      { auth: { redirectUrl: "http://localhost:7777/callback", responseType: 'token' }}
+      {
+        auth: {
+          redirectUrl: "http://192.168.1.15:7777/callback",
+          responseType: "token"
+        }
+      }
     );
   }
 
@@ -18,7 +23,8 @@ class LoginButton extends Component {
       window.localStorage.setItem("auth0IdToken", authResult.idToken);
       window.localStorage.setItem("auth0AccessToken", authResult.accessToken);
       const { data: { user } } = await this.props.refetchUser();
-      if (user) this.props.history.push("/");
+      if (user)
+        this.props.history.push(window.localStorage.getItem("loggedInFrom"));
       else this.props.history.push(`/signup`);
     });
   }
@@ -29,11 +35,7 @@ class LoginButton extends Component {
   };
 
   render() {
-    return (
-      <button onClick={this._showLogin}>
-        Log in
-      </button>
-    );
+    return <button onClick={this._showLogin}>Log in</button>;
   }
 }
 

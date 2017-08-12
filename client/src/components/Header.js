@@ -21,7 +21,6 @@ const Wrapper = styled.div`
   height: 3rem;
   line-height: 1rem;
   background-color: #222;
-  font-family: 'Archivo', sans-serif;
   font-size: 1rem;
   color: #eee;
 

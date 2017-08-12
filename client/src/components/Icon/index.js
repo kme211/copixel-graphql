@@ -8,16 +8,19 @@ const styles = ({ size, color }) => css`
   box-sizing: border-box;
   margin: ${size ? size / 160 + "rem" : "0.1em"};
   vertical-align: middle;
-  color: ${color || 'inherit'};
+  color: ${color || "inherit"};
   & > svg {
     width: 100%;
     height: 100%;
     fill: currentcolor;
     stroke: currentcolor;
+    & > g path {
+      fill: currentColor;
+    }
   }
 `;
 
-const Wrapper = styled.span`${styles}`;
+const Wrapper = styled.span`${styles};`;
 
 const Icon = ({ icon, ...props }) => {
   const svg = require(`./icons/${icon}.svg`);

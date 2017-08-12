@@ -9,7 +9,7 @@ import Icon from "./Icon";
 const Wrapper = styled.div`
   height: ${props => props.height};
   overflow: hidden;
-  background-color: #ECF0F1;
+  background-color: #ecf0f1;
 `;
 
 const HeaderButton = styled.h2`
@@ -29,17 +29,16 @@ class MessagesContainer extends Component {
     // at the start, before user has scrolled
     // so check for top position in the value
     // before setting the state
-    if (!value.topPosition) return;
-    console.log(value);
-    this.setState({ userIsScrolling: true });
+    if (!value.hasOwnProperty("topPosition")) return;
+    const closeToBottom = value.containerHeight - value.topPosition <= 40;
+    this.setState({ userIsScrolling: closeToBottom ? false : true });
   };
 
   render() {
     return (
       <Wrapper show={this.props.show} height={this.props.height}>
         <HeaderButton onClick={this.props.toggleShow}>
-          Messages
-          {" "}
+          Messages{" "}
           <Icon
             style={{ transform: this.props.iconRotation }}
             icon="up-arrow"

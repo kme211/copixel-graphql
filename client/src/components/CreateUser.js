@@ -31,8 +31,12 @@ class CreateUser extends React.Component {
     };
 
     try {
-      await this.props.createUserMutation({ variables });
-      this.props.history.replace("/");
+      await this.props.createUser({ variables });
+      const response = await this.props.refetchUser();
+      console.log("response", response);
+      if (response && response.data && response.data.user) {
+        this.props.history.replace(window.localStorage.getItem("loggedInFrom"));
+      }
     } catch (e) {
       console.error(e);
       this.props.history.replace("/");
@@ -83,7 +87,7 @@ class CreateUser extends React.Component {
 }
 
 const createUser = gql`
-  mutation ($username: String!, $email: String!){
+  mutation($username: String!, $email: String!) {
     createUser(username: $username, email: $email) {
       _id
       username

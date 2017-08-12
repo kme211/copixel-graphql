@@ -1,6 +1,7 @@
 import { PubSub } from "graphql-subscriptions";
 import { withFilter } from "graphql-subscriptions";
 import { User, Drawing, Section, Message } from "./models";
+import queue from "./jobs/client";
 
 const pubsub = new PubSub();
 
@@ -10,8 +11,9 @@ export const resolvers = {
       console.log("getUser", root, user);
       return user && user.username ? user : null;
     },
-    drawings: async () => {
-      const drawings = await Drawing.find();
+    drawings: async (root, args) => {
+      console.log("args", args);
+      const drawings = await Drawing.find(args).sort({ created: -1 });
       return drawings;
     },
     drawing: async (root, { id }) => {
@@ -61,7 +63,7 @@ export const resolvers = {
 
       pubsub.publish("messageAdded", {
         messageAdded: message,
-        drawingId: message.drawing
+        drawingId: message.drawing.toString()
       });
 
       return message;
@@ -76,35 +78,44 @@ export const resolvers = {
           status: "IN_PROGRESS",
           creator: user._id
         })
-      ).save();
+      ).saveAndPopulate();
+
+      console.log("section", section);
 
       pubsub.publish("sectionUpdated", {
         sectionUpdated: section,
-        drawingId: section.drawing
+        drawingId: section.drawing.toString()
       });
 
       return section;
     },
-    addPixelsToSection: async (root, { sectionId, pixels }) => {
+    addPixelsToSection: async (root, { sectionId, pixels }, { user }) => {
       console.log("addPixelsToSection sectionId", sectionId);
       const section = await Section.findOneAndUpdate(
-        { id: sectionId },
+        { _id: sectionId },
         { pixels, status: "COMPLETED" },
         {
           new: true,
           runValidators: true
         }
-      ).exec();
+      )
+        .populate("creator")
+        .exec();
 
       if (!section) throw new Error("Section not found");
       console.log("section", section);
+      const drawingId = section.drawing.toString();
 
       pubsub.publish("sectionUpdated", {
         sectionUpdated: section,
-        drawingId: drawingId
+        drawingId
       });
 
       console.log("section complete!", sectionId);
+
+      queue.enqueue("checkStatus", drawingId, () => {
+        console.log("job done?");
+      });
 
       return section;
     }

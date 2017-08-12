@@ -6,6 +6,13 @@ import {
 import { resolvers } from './resolvers';
 
 const typeDefs = `
+type User {
+  _id: ID!
+  auth0UserId: ID!
+  email: String!
+  username: String!
+}
+
 type Drawing {
   id: ID!
   name: String
@@ -16,6 +23,8 @@ type Drawing {
   sectionSizePx: Int!
   created: String
   sections: [Section]
+  sectionsNotStarted: Int
+  status: DRAWING_STATUS
   messages: [Message]!
 }
 
@@ -27,9 +36,13 @@ input DrawingInput {
 }
 
 input MessageInput{
-  drawingId: ID!
-  author: String!
+  drawing: ID!
   text: String!
+}
+
+enum DRAWING_STATUS {
+  COMPLETED
+  IN_PROGRESS
 }
 
 enum SECTION_STATUS {
@@ -41,7 +54,7 @@ type Section {
   x: Int!
   y: Int!
   id: ID!
-  creator: String
+  creator: User
   pixels: [Pixel]
   neighbors: [Neighbor]
   status: SECTION_STATUS!
@@ -54,10 +67,9 @@ input PixelInput {
 }
 
 input SectionInput {
-  drawingId: ID!
+  drawing: ID!
   x: Int!
   y: Int!
-  creator: String
   pixels: [PixelInput]
 }
 
@@ -69,7 +81,7 @@ type Pixel {
 
 type Message {
   id: ID!
-  author: String!
+  author: User!
   text: String
 }
 
@@ -82,17 +94,19 @@ type Neighbor {
 
 # This type specifies the entry points into our API
 type Query {
-  drawings: [Drawing]
+  user: User
+  drawings(status: DRAWING_STATUS): [Drawing]
   drawing(id: ID!): Drawing
   neighbors(drawingId: ID!, sectionX: Int!, sectionY: Int!): [Neighbor]
 }
 
 # The mutation root type, used to define all mutations
 type Mutation {
+  createUser(username: String!, email: String!): User
   addDrawing(drawing: DrawingInput!): Drawing
   addMessage(message: MessageInput!): Message
   addSection(section: SectionInput!): Section
-  addPixelsToSection(drawingId: ID!, sectionId: ID!, pixels: [PixelInput!]!): Section
+  addPixelsToSection(sectionId: ID!, pixels: [PixelInput!]!): Section
 }
 
 # The subscription root type, specifying what we can subscribe to

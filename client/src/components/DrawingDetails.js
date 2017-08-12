@@ -1,8 +1,8 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import styled from "styled-components";
 import DrawingPreview from "./DrawingPreview";
 import NotFound from "./NotFound";
-import GetParticipantInfo from "./GetParticipantInfo";
 import DrawingBoard from "./DrawingBoard";
 import SectionOverlay from "./SectionOverlay";
 import Button from "./Button";
@@ -13,23 +13,26 @@ import { gql, graphql, compose } from "react-apollo";
 import getCellSize from "../utils/getOptimalCellSize";
 import CompleteDrawing from "./CompleteDrawing";
 import { Motion, StaggeredMotion, spring } from "react-motion";
+import Push from "push.js";
 
 const BoardContainer = styled.div`
-position: relative;
-margin: 0 auto;
-${props => `
+  position: relative;
+  margin: 0 auto;
+  ${props => `
   width: ${props.width};
   height: ${props.height};
-`}
-overflow: hidden;
-display: flex;
-justify-content: center;
-align-items: center;
+`} overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 class DrawingDetails extends Component {
+  static propTypes = {
+    user: PropTypes.object.isRequired
+  };
+
   state = {
-    participant: null,
     currentSection: null,
     showDrawing: false,
     showMessages: true
@@ -48,7 +51,7 @@ class DrawingDetails extends Component {
         }
 
         const newMessage = subscriptionData.data.messageAdded;
-
+        console.log("newMessage", newMessage);
         // don't double add the message
         if (!prev.drawing.messages.find(msg => msg.id === newMessage.id)) {
           return Object.assign({}, prev, {
@@ -74,6 +77,21 @@ class DrawingDetails extends Component {
         }
 
         const sectionUpdated = subscriptionData.data.sectionUpdated;
+        console.log("Section updated", sectionUpdated);
+        if (
+          sectionUpdated.status === "COMPLETED" &&
+          sectionUpdated.creator._id !== this.props.user._id
+        ) {
+          Push.create("copixel", {
+            body: "A user has completed a section",
+            icon: "/icons/smile.png",
+            timeout: 6000,
+            onClick: function() {
+              window.focus();
+              this.close();
+            }
+          });
+        }
 
         return Object.assign({}, prev, {
           drawing: Object.assign({}, prev.drawing, {
@@ -87,20 +105,21 @@ class DrawingDetails extends Component {
     });
   }
 
-  saveParticipant = participant => {
-    this.setState({
-      participant
-    });
-  };
-
   onCellClick = async ({ x, y }) => {
+    const section = this.props.data.drawing.sections.find(
+      s => s.x === x && s.y === y
+    );
+
+    if (section) {
+      this.setState({ currentSection: { x, y, id: section.id } });
+      return;
+    }
     const { data: { addSection } } = await this.props.addSectionMutation({
       variables: {
         section: {
-          drawingId: this.props.match.params.drawingId,
+          drawing: this.props.match.params.drawingId,
           x,
-          y,
-          creator: this.state.participant.name
+          y
         }
       }
     });
@@ -122,7 +141,11 @@ class DrawingDetails extends Component {
   };
 
   initializeBoardContainer = el => {
-    if (el) this.boardContainerEl = el;
+    if (el) {
+      this.boardContainerEl = el;
+      console.log("force update");
+      this.forceUpdate();
+    }
   };
 
   render() {
@@ -153,24 +176,27 @@ class DrawingDetails extends Component {
 
     return (
       <div style={{ background: "rgb(234, 234, 234)" }}>
-        {!this.state.participant &&
-          <GetParticipantInfo saveParticipant={this.saveParticipant} />}
         <Motion
           defaultStyle={{
-            messagesHeight: this.state.showMessages ? 15 : 3,
+            messagesHeight: this.state.showMessages ? 16 : 3,
             messagesIconRotation: this.state.showMessages ? 180 : 0
           }}
           style={{
-            messagesHeight: spring(this.state.showMessages ? 15 : 3),
+            messagesHeight: spring(this.state.showMessages ? 16 : 3),
             messagesIconRotation: spring(this.state.showMessages ? 180 : 0)
           }}
         >
-          {({ messagesHeight, messagesIconRotation }) => (
+          {({ messagesHeight, messagesIconRotation }) =>
             <div>
               <BoardContainer
-                width={`${getCellSize(drawing.width, drawing.height, this.boardContainerEl, 40) * drawing.width}px`}
+                width={`${getCellSize(
+                  drawing.width,
+                  drawing.height,
+                  this.boardContainerEl,
+                  40
+                ) * drawing.width}px`}
                 innerRef={this.initializeBoardContainer}
-                height={`calc(100vh - ${messagesHeight + 3}rem)`}
+                height={`calc(100vh - ${messagesHeight + 5}rem)`}
               >
                 <StaggeredMotion
                   defaultStyles={defaultStyles}
@@ -190,7 +216,7 @@ class DrawingDetails extends Component {
                           };
                     })}
                 >
-                  {interpolatingStyles => (
+                  {interpolatingStyles =>
                     <div>
                       <DrawingBoard
                         styles={interpolatingStyles}
@@ -202,6 +228,7 @@ class DrawingDetails extends Component {
                           this.boardContainerEl,
                           40
                         )}
+                        user={this.props.user}
                         sections={drawing.sections}
                         onCellClick={this.onCellClick}
                       >
@@ -234,28 +261,24 @@ class DrawingDetails extends Component {
                         <Button onClick={this.toggleDrawing}>
                           Reveal drawing!
                         </Button>}
-                    </div>
-                  )}
+                    </div>}
                 </StaggeredMotion>
-
               </BoardContainer>
               <MessagesContainer
                 show={this.state.showMessages}
                 height={`${messagesHeight}rem`}
                 iconRotation={`rotate(${messagesIconRotation}deg)`}
                 toggleShow={this.toggleMessages}
-                participant={this.state.participant}
+                participant={this.props.user}
                 messages={drawing.messages}
               />
-            </div>
-          )}
+            </div>}
         </Motion>
 
         {this.state.currentSection &&
           <Cover>
             <Body>
               <SectionOverlay
-                creator={this.state.participant.name}
                 section={this.state.currentSection}
                 sectionSizePx={drawing.sectionSizePx}
                 pixelSize={drawing.pixelSize}
@@ -283,11 +306,16 @@ export const drawingDetailsQuery = gql`
         x
         y
         status
+        creator {
+          _id
+        }
       }
       messages {
         id
         text
-        author
+        author {
+          username
+        }
       }
     }
   }
@@ -298,7 +326,9 @@ const messagesSubscription = gql`
     messageAdded(drawingId: $drawingId) {
       id
       text
-      author
+      author {
+        username
+      }
     }
   }
 `;
@@ -310,6 +340,9 @@ const sectionsSubscription = gql`
       x
       y
       status
+      creator {
+        _id
+      }
     }
   }
 `;

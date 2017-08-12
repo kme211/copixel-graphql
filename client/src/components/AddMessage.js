@@ -1,30 +1,33 @@
 import React from "react";
+import styled from "styled-components";
 import { gql, graphql } from "react-apollo";
 import { drawingDetailsQuery } from "./DrawingDetails";
 import { withRouter } from "react-router";
 import Input from "./Input";
 
+const MessageInput = styled.div`margin: 0 1rem 1rem 1rem;`;
+
 const AddMessage = ({ mutate, match, participant }) => {
   const handleKeyUp = evt => {
     if (evt.keyCode === 13) {
-      console.log("addMessage", participant);
+      console.log("addMessage");
       mutate({
         variables: {
           message: {
-            drawingId: match.params.drawingId,
-            text: evt.target.value,
-            author: participant.name
+            drawing: match.params.drawingId,
+            text: evt.target.value
           }
         },
         optimisticResponse: {
           addMessage: {
             text: evt.target.value,
-            author: participant.name,
+            author: participant,
             id: Math.round(Math.random() * -1000000),
             __typename: "Message"
           }
         },
         update: (store, { data: { addMessage } }) => {
+          console.log("update", addMessage);
           // Read the data from the cache for this query.
           const data = store.readQuery({
             query: drawingDetailsQuery,
@@ -53,14 +56,14 @@ const AddMessage = ({ mutate, match, participant }) => {
   };
 
   return (
-    <div className="messageInput">
+    <MessageInput>
       <Input
         margin="0"
         type="text"
         placeholder="Write a message..."
         onKeyUp={handleKeyUp}
       />
-    </div>
+    </MessageInput>
   );
 };
 
@@ -69,7 +72,9 @@ const addMessageMutation = gql`
     addMessage(message: $message) {
       id
       text
-      author
+      author {
+        username
+      }
     }
   }
 `;

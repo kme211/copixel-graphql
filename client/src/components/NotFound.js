@@ -1,6 +1,6 @@
 import React from "react";
 
-const NotFound = ({ match }) => {
+const NotFound = (props) => {
   return <div className="NotFound">404 Not Found</div>;
 };
 

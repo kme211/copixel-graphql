@@ -1,8 +1,14 @@
 import React, { Component } from "react";
 import { graphql, gql, compose } from "react-apollo";
+import PropTypes from "prop-types";
 import Editor from "./Editor";
 
 class SectionOverlay extends Component {
+  static propTypes = {
+    sectionSizePx: PropTypes.number.isRequired,
+    pixelSize: PropTypes.number.isRequired
+  };
+
   state = {
     pixels: null
   };
@@ -11,7 +17,6 @@ class SectionOverlay extends Component {
     console.log("savePixels", this.props);
     const response = await this.props.addPixelsToSectionMutation({
       variables: {
-        drawingId: this.props.drawingId,
         sectionId: this.props.section.id,
         pixels
       }
@@ -29,14 +34,14 @@ class SectionOverlay extends Component {
     console.log("SectionOverlay data", this.props.data);
     return (
       <div>
-          <Editor
-            neighbors={neighbors}
-            x={section.x}
-            y={section.y}
-            sectionSizePx={this.props.sectionSizePx}
-            pixelSize={this.props.pixelSize}
-            savePixels={this.savePixels}
-          />
+        <Editor
+          neighbors={neighbors}
+          x={section.x}
+          y={section.y}
+          sectionSizePx={this.props.sectionSizePx}
+          pixelSize={this.props.pixelSize}
+          savePixels={this.savePixels}
+        />
       </div>
     );
   }
@@ -58,9 +63,12 @@ const getSectionNeighbors = gql`
 `;
 
 const addPixelsToSectionMutation = gql`
-  mutation addPixelsToSection($drawingId: ID!, $sectionId: ID!, $pixels: [PixelInput!]!) {
-    addPixelsToSection(drawingId: $drawingId, sectionId: $sectionId, pixels: $pixels) {
+  mutation addPixelsToSection($sectionId: ID!, $pixels: [PixelInput!]!) {
+    addPixelsToSection(sectionId: $sectionId, pixels: $pixels) {
       status
+      creator {
+        _id
+      }
     }
   }
 `;

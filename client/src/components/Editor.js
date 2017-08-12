@@ -63,7 +63,6 @@ class Editor extends Component {
   };
 
   componentDidMount() {
-    console.log("Editor mounted!")
     const pixels = generatePixels({
       blockSizePx: this.props.pixelSize,
       sectionX: this.props.x,
@@ -129,7 +128,6 @@ class Editor extends Component {
     } = this.state;
 
     const { neighbors, x, y, pixelSize, sectionSizePx } = this.props;
-    console.log('editor', neighbors, x, y, pixelSize, sectionSizePx)
     const topNeighbor = neighbors.find(n => n.relativePosition === "TOP");
     const rightNeighbor = neighbors.find(n => n.relativePosition === "RIGHT");
     const bottomNeighbor = neighbors.find(

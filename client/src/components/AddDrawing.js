@@ -4,10 +4,11 @@ import Inner from "./Inner";
 import Input from "./Input";
 import SubmitButton from "./SubmitButton";
 import Toggle from "./Toggle";
-import { withRouter } from 'react-router';
+import { withRouter } from "react-router";
 
 class AddDrawing extends Component {
   state = {
+    error: null,
     name: "",
     width: 2,
     height: 1,
@@ -23,23 +24,32 @@ class AddDrawing extends Component {
     });
   };
 
-  onFormSubmit = e => {
+  onFormSubmit = async e => {
     e.preventDefault();
-    this.props.mutate({
-      variables: { 
-        drawing: {
-        name: this.state.name,
-        width: this.state.width,
-        height: this.state.height,
-        public: this.state.public
-      } 
-    }
-    }).then(({ data: {addDrawing}}) => {
+    try {
+      console.log(this.state.public)
+      const response = await this.props.mutate({
+        variables: {
+          drawing: {
+            name: this.state.name,
+            width: this.state.width,
+            height: this.state.height,
+            public: this.state.public
+          }
+        }
+      });
+
+      const { data: { addDrawing } } = response;
       this.props.history.push(`/drawing/${addDrawing.id}`);
-    });
+    } catch (error) {
+      this.setState({ error });
+    }
   };
 
   render() {
+    if (this.state.error) {
+      return <div>{this.state.error.toString()}</div>;
+    }
     return (
       <Inner>
         <form>
@@ -79,10 +89,7 @@ class AddDrawing extends Component {
             name="public"
             checkedItem={this.state.public ? "true" : "false"}
           />
-          <SubmitButton
-            value="add new drawing"
-            onClick={this.onFormSubmit}
-          />
+          <SubmitButton value="add new drawing" onClick={this.onFormSubmit} />
         </form>
       </Inner>
     );
@@ -99,6 +106,8 @@ const addDrawingMutation = gql`
   }
 `;
 
-const AddDrawingWithMutation = graphql(addDrawingMutation)(withRouter(AddDrawing));
+const AddDrawingWithMutation = graphql(addDrawingMutation)(
+  withRouter(AddDrawing)
+);
 
 export default AddDrawingWithMutation;

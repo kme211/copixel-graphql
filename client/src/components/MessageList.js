@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
+import moment from "moment-timezone";
+import flatten from "lodash/flatten";
+import compact from "lodash/compact";
 
 const Message = styled.div`
   padding: 0.25em 0;
@@ -8,6 +11,13 @@ const Message = styled.div`
 `;
 
 const Wrapper = styled.div`margin: 0.5rem 1rem;`;
+
+const DT = styled.div`
+  margin: 0.5rem 0;
+  color: #4d4d4d;
+  text-align: center;
+  font-size: 0.75rem;
+`;
 
 const Author = styled.span`font-weight: 600;`;
 
@@ -36,16 +46,31 @@ class MessageList extends Component {
   };
 
   render() {
+    const zone = moment.tz.guess();
+
+    let messagesWithDates = this.props.messages.map((m, i, arr) => {
+      const date = moment(m.created).tz(zone);
+      const prevDate = i > 0 ? arr[i - 1].created : null;
+      let includeDate = true;
+      if (prevDate)
+        includeDate = moment(m.created).isAfter(moment(prevDate), "minute");
+      return [
+        includeDate
+          ? <DT key={`dt-${m.id}`}>
+              {moment(date).tz(zone).format("lll")}
+            </DT>
+          : null,
+        <div key={m.id}>
+          <Author>{m.author.username}</Author>: {m.text}
+        </div>
+      ];
+    });
+
+    messagesWithDates = compact(flatten(messagesWithDates));
     return (
       <Wrapper>
         {!this.props.messages.length && <Message>No messages yet!</Message>}
-        {this.props.messages.map(message =>
-          <Message key={message.id} optimistic={message.id < 0}>
-            <div>
-              <Author>{message.author.username}</Author>: {message.text}
-            </div>
-          </Message>
-        )}
+        {messagesWithDates.length && messagesWithDates}
       </Wrapper>
     );
   }

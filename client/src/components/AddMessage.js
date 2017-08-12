@@ -4,24 +4,28 @@ import { gql, graphql } from "react-apollo";
 import { drawingDetailsQuery } from "./DrawingDetails";
 import { withRouter } from "react-router";
 import Input from "./Input";
+import getTimestamp from "../utils/getTimestamp";
 
-const MessageInput = styled.div`margin: 0 1rem 1rem 1rem;`;
+const MessageInput = styled.div`margin: 0 1rem;`;
 
 const AddMessage = ({ mutate, match, participant }) => {
   const handleKeyUp = evt => {
     if (evt.keyCode === 13) {
       console.log("addMessage");
+      const created = getTimestamp();
       mutate({
         variables: {
           message: {
             drawing: match.params.drawingId,
-            text: evt.target.value
+            text: evt.target.value,
+            created
           }
         },
         optimisticResponse: {
           addMessage: {
             text: evt.target.value,
             author: participant,
+            created,
             id: Math.round(Math.random() * -1000000),
             __typename: "Message"
           }

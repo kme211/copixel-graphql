@@ -5,6 +5,7 @@ import Input from "./Input";
 import SubmitButton from "./SubmitButton";
 import Toggle from "./Toggle";
 import { withRouter } from "react-router";
+import getTimestamp from "../utils/getTimestamp";
 
 class AddDrawing extends Component {
   state = {
@@ -16,9 +17,10 @@ class AddDrawing extends Component {
   };
 
   onFormChange = e => {
-    const value = e.target.value === "true"
-      ? true
-      : e.target.value === "false" ? false : e.target.value;
+    const value =
+      e.target.value === "true"
+        ? true
+        : e.target.value === "false" ? false : e.target.value;
     this.setState({
       [e.target.name]: value
     });
@@ -27,14 +29,15 @@ class AddDrawing extends Component {
   onFormSubmit = async e => {
     e.preventDefault();
     try {
-      console.log(this.state.public)
+      console.log(this.state.public);
       const response = await this.props.mutate({
         variables: {
           drawing: {
             name: this.state.name,
             width: this.state.width,
             height: this.state.height,
-            public: this.state.public
+            public: this.state.public,
+            created: getTimestamp()
           }
         }
       });
@@ -48,7 +51,11 @@ class AddDrawing extends Component {
 
   render() {
     if (this.state.error) {
-      return <div>{this.state.error.toString()}</div>;
+      return (
+        <div>
+          {this.state.error.toString()}
+        </div>
+      );
     }
     return (
       <Inner>

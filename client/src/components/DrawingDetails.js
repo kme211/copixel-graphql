@@ -14,6 +14,7 @@ import getCellSize from "../utils/getOptimalCellSize";
 import CompleteDrawing from "./CompleteDrawing";
 import { Motion, StaggeredMotion, spring } from "react-motion";
 import Push from "push.js";
+import getTimestamp from "../utils/getTimestamp";
 
 const BoardContainer = styled.div`
   position: relative;
@@ -119,7 +120,8 @@ class DrawingDetails extends Component {
         section: {
           drawing: this.props.match.params.drawingId,
           x,
-          y
+          y,
+          created: getTimestamp()
         }
       }
     });
@@ -316,6 +318,7 @@ export const drawingDetailsQuery = gql`
         author {
           username
         }
+        created
       }
     }
   }
@@ -329,6 +332,7 @@ const messagesSubscription = gql`
       author {
         username
       }
+      created
     }
   }
 `;

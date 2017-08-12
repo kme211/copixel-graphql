@@ -31,8 +31,8 @@ const drawingSchema = new Schema({
     ref: "User"
   },
   created: {
-    type: Date,
-    default: Date.now
+    type: String,
+    required: "You must supply a created string!"
   },
   name: {
     type: String,
@@ -186,8 +186,8 @@ const sectionSchema = new Schema({
     ref: "User"
   },
   created: {
-    type: Date,
-    default: Date.now
+    type: String,
+    required: "You must supply a created string!"
   },
   drawing: {
     type: Schema.ObjectId,
@@ -238,8 +238,8 @@ const messageSchema = new Schema({
     required: "You must supply a drawing for a Message!"
   },
   created: {
-    type: Date,
-    default: Date.now
+    type: String,
+    required: "You must supply a created string!"
   },
   text: {
     type: String,

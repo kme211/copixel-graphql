@@ -1,9 +1,6 @@
-import {
-  makeExecutableSchema,
-  addMockFunctionsToSchema,
-} from 'graphql-tools';
+import { makeExecutableSchema, addMockFunctionsToSchema } from "graphql-tools";
 
-import { resolvers } from './resolvers';
+import { resolvers } from "./resolvers";
 
 const typeDefs = `
 type User {
@@ -33,11 +30,13 @@ input DrawingInput {
   width: Int!
   height: Int!
   public: Boolean!
+  created: String!
 }
 
 input MessageInput{
   drawing: ID!
   text: String!
+  created: String!
 }
 
 enum DRAWING_STATUS {
@@ -71,6 +70,7 @@ input SectionInput {
   x: Int!
   y: Int!
   pixels: [PixelInput]
+  created: String!
 }
 
 type Pixel {
@@ -83,6 +83,7 @@ type Message {
   id: ID!
   author: User!
   text: String
+  created: String
 }
 
 type Neighbor {

@@ -29,9 +29,21 @@ class MessagesContainer extends Component {
     // at the start, before user has scrolled
     // so check for top position in the value
     // before setting the state
-    if (!value.hasOwnProperty("topPosition")) return;
-    const closeToBottom = value.containerHeight - value.topPosition <= 40;
-    this.setState({ userIsScrolling: closeToBottom ? false : true });
+    console.log(
+      value.containerHeight,
+      value.topPosition,
+      value.containerHeight - value.topPosition
+    );
+    if (
+      value.hasOwnProperty("topPosition") &&
+      value.hasOwnProperty("containerHeight")
+    ) {
+      const closeToBottom = value.containerHeight - value.topPosition <= 40;
+      console.log("closeToBottom", closeToBottom);
+      this.setState({
+        userIsScrolling: closeToBottom ? false : true
+      });
+    }
   };
 
   render() {

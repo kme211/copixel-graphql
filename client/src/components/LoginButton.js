@@ -11,7 +11,7 @@ class LoginButton extends Component {
       process.env.REACT_APP_AUTH_DOMAIN,
       {
         auth: {
-          redirectUrl: "http://192.168.1.15:7777/callback",
+          redirectUrl: "http://localhost:7777/callback",
           responseType: "token"
         }
       }

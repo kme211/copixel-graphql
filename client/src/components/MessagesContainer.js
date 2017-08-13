@@ -30,15 +30,18 @@ class MessagesContainer extends Component {
     // so check for top position in the value
     // before setting the state
     console.log(
-      value.containerHeight,
+      value.realHeight,
       value.topPosition,
-      value.containerHeight - value.topPosition
+      value.realHeight - value.topPosition - value.topPosition
     );
     if (
       value.hasOwnProperty("topPosition") &&
+      value.hasOwnProperty("realHeight") &&
       value.hasOwnProperty("containerHeight")
     ) {
-      const closeToBottom = value.containerHeight - value.topPosition <= 40;
+      const closeToBottom =
+        value.realHeight - value.topPosition - value.containerHeight <=
+        value.containerHeight / 2;
       console.log("closeToBottom", closeToBottom);
       this.setState({
         userIsScrolling: closeToBottom ? false : true
@@ -66,6 +69,7 @@ class MessagesContainer extends Component {
             onScroll={this.onUserScroll}
           >
             <MessageList
+              user={this.props.participant}
               userIsScrolling={this.state.userIsScrolling}
               messages={this.props.messages}
               participant={this.props.participant}

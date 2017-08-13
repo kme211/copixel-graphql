@@ -6,7 +6,7 @@ import db from "./db";
 import jobs from "./src/jobs";
 db.once("open", console.log.bind(console, "worker connected to mongoose"));
 
-console.log("jobs", jobs);
+console.log("worker jobs", jobs);
 worker.register(jobs);
 
 worker.on("dequeued", function(data) {

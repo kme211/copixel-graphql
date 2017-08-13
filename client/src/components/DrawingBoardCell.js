@@ -12,7 +12,10 @@ const Cell = styled.div`
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: background 0.4s;
+  transition: background 0.4s linear;
+  & svg {
+    transition: transform 0.4s cubic-bezier(0.2, 2, 1, 1);
+  }
   pointer-events: ${props => (props.enabled ? "auto" : "none")};
   background: ${props =>
     props.enabled
@@ -21,7 +24,11 @@ const Cell = styled.div`
         ? "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAPUlEQVQoU2P09fX9z4ADXL16lYERlwKQpLa2NnYFMEmQwRgmIEtiKECXRFGATRKuAJckWIGSktJ/kGtxAQAy2iO4XeqY/AAAAABJRU5ErkJggg==)"
         : "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAGCAYAAADgzO9IAAAANElEQVQYV2M8cPTsfwY0YGqgwcCILgESPH3hBqoETBBkAFwHsiBcAl0QLPH169f/IDPRAQCA2SN6dYifvwAAAABJRU5ErkJggg==)"};
   &:hover {
+    & svg {
+      transform: scale(1.2);
+    }
     background: #4d4d4d;
+    color: #b2d430;
   }
 `;
 

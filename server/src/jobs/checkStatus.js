@@ -4,7 +4,7 @@ import "../models";
 const Drawing = mongoose.model("Drawing");
 
 export default async function checkStatus(drawingId, callback) {
-  console.log("checkStatus");
+  console.log("checkStatus job starting...");
   try {
     const drawing = await Drawing.findById(drawingId);
     if (!drawing) throw new Error("Drawing not found");

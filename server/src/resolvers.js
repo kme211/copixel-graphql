@@ -11,9 +11,19 @@ export const resolvers = {
       console.log("getUser", root, user);
       return user && user.username ? user : null;
     },
-    drawings: async (root, args) => {
-      console.log("args", args);
-      const drawings = await Drawing.find(args).sort({ created: -1 });
+    drawings: async (
+      root,
+      { status, public: isPublic, belongsToUser },
+      { user }
+    ) => {
+      const queryOptions = {};
+      if (status !== undefined) queryOptions.status = status;
+      if (isPublic !== undefined) queryOptions.public = isPublic;
+      if (belongsToUser !== undefined)
+        queryOptions.particpants = {
+          $in: [user._id]
+        };
+      const drawings = await Drawing.find(queryOptions).sort({ created: -1 });
       return drawings;
     },
     drawing: async (root, { id }) => {
@@ -81,10 +91,15 @@ export const resolvers = {
       ).saveAndPopulate();
 
       console.log("section", section);
+      const drawingId = section.drawing.toString();
 
       pubsub.publish("sectionUpdated", {
         sectionUpdated: section,
-        drawingId: section.drawing.toString()
+        drawingId
+      });
+
+      queue.enqueue("addParticipant", { drawingId, userId: user._id }, () => {
+        console.log("addParticipant job done?");
       });
 
       return section;
@@ -113,8 +128,9 @@ export const resolvers = {
 
       console.log("section complete!", sectionId);
 
+      console.log("add drawing to queue");
       queue.enqueue("checkStatus", drawingId, () => {
-        console.log("job done?");
+        console.log("checkStatus job done?");
       });
 
       return section;

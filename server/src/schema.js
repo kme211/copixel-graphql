@@ -96,7 +96,7 @@ type Neighbor {
 # This type specifies the entry points into our API
 type Query {
   user: User
-  drawings(status: DRAWING_STATUS): [Drawing]
+  drawings(status: DRAWING_STATUS, public: Boolean, belongsToUser: Boolean): [Drawing]
   drawing(id: ID!): Drawing
   neighbors(drawingId: ID!, sectionX: Int!, sectionY: Int!): [Neighbor]
 }

@@ -66,7 +66,13 @@ const drawingSchema = new Schema({
   public: {
     type: Boolean,
     required: "You must supply a boolean value for public!"
-  }
+  },
+  participants: [
+    {
+      type: Schema.ObjectId,
+      ref: "User"
+    }
+  ]
 });
 
 drawingSchema.virtual("sections", {
@@ -152,7 +158,7 @@ drawingSchema.methods.getNeighborsOfSection = function(sectionX, sectionY) {
     {
       neighbor: bottomNeighbor,
       filter: pixel => {
-        return pixel.y === (sectionX + 1) * this.sectionSizePx;
+        return pixel.y === (sectionY + 1) * this.sectionSizePx;
       },
       relativePosition: "BOTTOM"
     }

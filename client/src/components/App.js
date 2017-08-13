@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import styled from "styled-components";
 import Callback from "./Callback";
 import DrawingsListWithData from "./DrawingsListWithData";
+import UserDrawings from "./UserDrawings";
 import AddDrawing from "./AddDrawing";
 import NotFound from "./NotFound";
 import DrawingDetails from "./DrawingDetails";
@@ -34,7 +35,14 @@ class App extends Component {
   };
   isLoggedIn = () => {
     const token = window.localStorage.getItem("auth0IdToken");
-    if (token && isTokenExpired(token)) return this.logout();
+    if (token && isTokenExpired(token)) {
+      console.warn("your token is expired and you will be logged out");
+      return this.logout();
+    }
+
+    if (!this.props.data.user) {
+      console.warn("no user data");
+    }
     return !!this.props.data.user;
   };
 
@@ -50,6 +58,7 @@ class App extends Component {
             loading={this.props.data.loading}
             isLoggedIn={this.isLoggedIn}
             logout={this.logout}
+            user={this.props.data.user}
             refetchUser={this.refetchUser}
           />
           <Inner>
@@ -65,6 +74,16 @@ class App extends Component {
                       isLoggedIn={this.isLoggedIn}
                     />}
                 />
+                <Route
+                  exact
+                  path="/account/drawings"
+                  render={props =>
+                    <UserDrawings
+                      {...props}
+                      isLoggedIn={this.isLoggedIn}
+                      user={this.props.data.user}
+                    />}
+                />
                 <Route exact path="/callback" component={Callback} />
                 <Route
                   exact
@@ -77,7 +96,7 @@ class App extends Component {
                     />}
                 />
                 <Route
-                  path="/add"
+                  path="/new"
                   render={props =>
                     <AddDrawing {...props} user={this.props.data.user} />}
                 />

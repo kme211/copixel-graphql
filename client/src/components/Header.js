@@ -4,6 +4,7 @@ import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
 import Inner from "./Inner";
 import LoginButton from "./LoginButton";
+import DropdownButton from "./DropdownButton";
 
 const Nav = styled.nav`
   display: flex;
@@ -26,7 +27,6 @@ const Wrapper = styled.div`
 
   a,
   button {
-    
     display: inline-block;
     text-decoration: none;
     outline: none;
@@ -40,7 +40,8 @@ const Wrapper = styled.div`
     transition: color 0.4s;
   }
 
-  a:hover, button:hover {
+  a:hover,
+  button:hover {
     color: white;
   }
 
@@ -50,7 +51,7 @@ const Wrapper = styled.div`
   }
 `;
 
-const Header = props => (
+const Header = props =>
   <Wrapper>
     <Inner>
       <Nav>
@@ -58,20 +59,24 @@ const Header = props => (
 
         <div>
           {props.isLoggedIn() &&
-            <NavLink to="/add" activeStyle={activeStyle}>
-              add
+            <NavLink to="/new" activeStyle={activeStyle}>
+              new
             </NavLink>}
           {!props.isLoggedIn() &&
             !props.loading &&
             <LoginButton refetchUser={props.refetchUser} />}
-          {props.isLoggedIn() && <button onClick={props.logout}>logout</button>}
+          {props.isLoggedIn() &&
+            <DropdownButton label={props.user.username}>
+              <Link to="/account/drawings">my drawings</Link>
+              <button onClick={props.logout}>logout</button>
+            </DropdownButton>}
         </div>
       </Nav>
     </Inner>
-  </Wrapper>
-);
+  </Wrapper>;
 
 Header.propTypes = {
+  user: PropTypes.object,
   isLoggedIn: PropTypes.func.isRequired,
   logout: PropTypes.func.isRequired
 };

@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import moment from "moment-timezone";
 import flatten from "lodash/flatten";
 import compact from "lodash/compact";
+import getUserMentionRegex from "../utils/getUserMentionRegex";
 
 const Message = styled.div`
   padding: 0.25em 0;
@@ -12,6 +13,8 @@ const Message = styled.div`
 
 const Wrapper = styled.div`margin: 0.5rem 1rem;`;
 
+const Mention = styled.span`background-color: #f7c873;`;
+
 const DT = styled.div`
   margin: 0.5rem 0;
   color: #4d4d4d;
@@ -19,10 +22,14 @@ const DT = styled.div`
   font-size: 0.75rem;
 `;
 
-const Author = styled.span`font-weight: 600;`;
+const Author = styled.span`
+  font-weight: 600;
+  margin-right: 0.25rem;
+`;
 
 class MessageList extends Component {
   static propTypes = {
+    user: PropTypes.object.isRequired,
     userIsScrolling: PropTypes.bool.isRequired,
     messages: PropTypes.array.isRequired,
     participant: PropTypes.object.isRequired
@@ -37,16 +44,15 @@ class MessageList extends Component {
   scrollToBottom = () => {
     if (this.props.userIsScrolling) return;
     try {
-      console.log("Attempting to scroll to bottom");
       this.context.scrollArea.scrollBottom();
     } catch (e) {
-      console.log("Scroll to bottom did not working trying again 50ms");
       window.setTimeout(() => this.scrollToBottom(), 50);
     }
   };
 
   render() {
     const zone = moment.tz.guess();
+    const regex = getUserMentionRegex(this.props.user.username);
 
     let messagesWithDates = this.props.messages.map((m, i, arr) => {
       const date = moment(m.created).tz(zone);
@@ -60,17 +66,33 @@ class MessageList extends Component {
               {moment(date).tz(zone).format("lll")}
             </DT>
           : null,
-        <div key={m.id}>
-          <Author>{m.author.username}</Author>: {m.text}
-        </div>
+        <Message key={m.id}>
+          <Author>
+            {m.author.username}:
+          </Author>
+          {flatten(
+            m.text.split(" ").map((word, n) => {
+              const result = regex.exec(word);
+              if (result)
+                return [
+                  <Mention key={`mention-${n}-${m.id}`}>
+                    {result[1]}
+                  </Mention>,
+                  result[2] ? result[2] + " " : " "
+                ];
+              return [word, " "];
+            })
+          )}
+        </Message>
       ];
     });
 
     messagesWithDates = compact(flatten(messagesWithDates));
+
     return (
       <Wrapper>
         {!this.props.messages.length && <Message>No messages yet!</Message>}
-        {messagesWithDates.length && messagesWithDates}
+        {messagesWithDates.length > 0 && messagesWithDates}
       </Wrapper>
     );
   }

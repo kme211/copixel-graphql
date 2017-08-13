@@ -30,11 +30,15 @@ class CompleteDrawing extends Component {
 
   render() {
     if (this.props.data.loading) {
-      return <div>Loading...</div>;
+      return <div style={this.props.style}>Loading...</div>;
     }
 
     if (this.props.data.error) {
-      return <div>Error: ${this.props.data.error.message}</div>;
+      return (
+        <div>
+          Error: ${this.props.data.error.message}
+        </div>
+      );
     }
 
     const {

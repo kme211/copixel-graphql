@@ -1,4 +1,3 @@
-import React from "react";
 import { gql, graphql } from "react-apollo";
 import DrawingsList from "./DrawingsList";
 

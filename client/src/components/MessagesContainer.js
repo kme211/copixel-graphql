@@ -4,21 +4,11 @@ import PropTypes from "prop-types";
 import ScrollArea from "react-scrollbar";
 import AddMessage from "./AddMessage";
 import MessageList from "./MessageList";
-import Icon from "./Icon";
+import HeaderButton from "./MessagesHeaderButton";
 
 const Wrapper = styled.div`
   height: ${props => props.height};
   overflow: hidden;
-  background-color: #ecf0f1;
-`;
-
-const HeaderButton = styled.h2`
-  background-color: #222;
-  color: white;
-  font-size: 1rem;
-  font-weight: 300;
-  padding: 1rem;
-  cursor: pointer;
 `;
 
 class MessagesContainer extends Component {
@@ -52,14 +42,7 @@ class MessagesContainer extends Component {
   render() {
     return (
       <Wrapper show={this.props.show} height={this.props.height}>
-        <HeaderButton onClick={this.props.toggleShow}>
-          Messages{" "}
-          <Icon
-            style={{ transform: this.props.iconRotation }}
-            icon="up-arrow"
-          />
-        </HeaderButton>
-
+        <HeaderButton onClick={this.props.toggleShow} iconRotation={this.props.iconRotation}/>
         <div>
           <ScrollArea
             speed={0.8}
@@ -86,7 +69,8 @@ MessagesContainer.propTypes = {
   toggleShow: PropTypes.func.isRequired,
   show: PropTypes.bool.isRequired,
   messages: PropTypes.array.isRequired,
-  participant: PropTypes.object.isRequired
+  participant: PropTypes.object.isRequired,
+  iconRotation: PropTypes.string.isRequired
 };
 
 export default MessagesContainer;

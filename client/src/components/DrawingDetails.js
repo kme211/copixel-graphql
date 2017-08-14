@@ -15,6 +15,7 @@ import CompleteDrawing from "./CompleteDrawing";
 import { Motion, StaggeredMotion, spring } from "react-motion";
 import Push from "push.js";
 import getTimestamp from "../utils/getTimestamp";
+import Wrapper from "./DrawingDetailWrapper";
 
 const BoardContainer = styled.div`
   position: relative;
@@ -177,7 +178,7 @@ class DrawingDetails extends Component {
     });
 
     return (
-      <div style={{ background: "rgb(234, 234, 234)" }}>
+      <Wrapper>
         <Motion
           defaultStyle={{
             messagesHeight: this.state.showMessages ? 16 : 3,
@@ -289,7 +290,7 @@ class DrawingDetails extends Component {
               />
             </Body>
           </Cover>}
-      </div>
+      </Wrapper>
     );
   }
 }

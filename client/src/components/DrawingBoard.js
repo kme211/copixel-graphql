@@ -42,7 +42,7 @@ class DrawingBoard extends Component {
             ? neighboringSections.length &&
               neighboringSections.every(s => s.status === "COMPLETED")
             : false;
-        if (section) console.log("section", section);
+
         if (
           status === "IN_PROGRESS" &&
           section.creator._id === this.props.user._id

@@ -1,25 +1,50 @@
 import React from "react";
 import { gql, graphql } from "react-apollo";
+import styled from "styled-components";
+import Wrapper from "./DrawingDetailWrapper";
+import LoadingSpinner from "./LoadingSpinner";
+import MessagesHeaderButton from "./MessagesHeaderButton";
+
+const NameWrapper = styled.div`
+  font-size: 4vw;
+  color: #222;
+  text-align: center;
+  height: calc(100% - 16rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const MessagesWrapper = styled.div`
+  height: 16rem;
+  & > p {
+    padding: 1rem;
+  }
+`;
 
 const DrawingPreview = ({ data: { loading, error, drawing } }) => {
   if (loading) {
-    return <p>Loading ...</p>;
+    return <LoadingSpinner />;
   }
   if (error) {
     return (
-      <p>
+      <Wrapper>
         {error.message}
-      </p>
+      </Wrapper>
     );
   }
 
   return (
-    <div>
-      <div>
+    <Wrapper>
+      <NameWrapper>
         {drawing.name}
-      </div>
-      <div>Loading Messages</div>
-    </div>
+      </NameWrapper>
+
+      <MessagesWrapper>
+        <MessagesHeaderButton iconRotation="rotate(180deg)" />
+        <p>Loading messages...</p>
+      </MessagesWrapper>
+    </Wrapper>
   );
 };
 

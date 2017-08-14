@@ -17,6 +17,7 @@ import { isTokenExpired } from "../utils/jwtHelper";
 const Wrapper = styled.div`
   font-family: 'Archivo', sans-serif;
   font-size: 16px;
+  height: 100%;
   *,
   & {
     box-sizing: border-box;
@@ -25,6 +26,10 @@ const Wrapper = styled.div`
   p {
     margin: 0.5rem 0;
   }
+`;
+
+const StyledInner = styled(Inner)`
+  height: calc(100% - 3rem);
 `;
 
 class App extends Component {
@@ -61,7 +66,7 @@ class App extends Component {
             user={this.props.data.user}
             refetchUser={this.refetchUser}
           />
-          <Inner>
+          <StyledInner>
             {this.props.data.loading && <LoadingSpinner />}
             {!this.props.data.loading &&
               <Switch>
@@ -107,7 +112,7 @@ class App extends Component {
                 />
                 <Route component={NotFound} />
               </Switch>}
-          </Inner>
+          </StyledInner>
         </Wrapper>
       </BrowserRouter>
     );

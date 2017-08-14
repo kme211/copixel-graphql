@@ -78,7 +78,7 @@ const DrawingsList = ({
             key={ch.id}
             className={"drawing " + (ch.id < 0 ? "optimistic" : "")}
           >
-            <DrawingLink to={ch.id < 0 ? `/` : `drawing/${ch.id}`}>
+            <DrawingLink to={ch.id < 0 ? `/` : `/drawing/${ch.id}`}>
               <div className="name">
                 {ch.name}
               </div>

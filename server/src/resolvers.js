@@ -20,7 +20,7 @@ export const resolvers = {
       if (status !== undefined) queryOptions.status = status;
       if (isPublic !== undefined) queryOptions.public = isPublic;
       if (belongsToUser !== undefined)
-        queryOptions.particpants = {
+        queryOptions.participants = {
           $in: [user._id]
         };
       const drawings = await Drawing.find(queryOptions).sort({ created: -1 });

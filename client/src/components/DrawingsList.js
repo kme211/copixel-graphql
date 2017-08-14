@@ -83,11 +83,12 @@ const DrawingsList = ({
                 {ch.name}
               </div>
               <div className="left">
-                {numSectionsAvailable} section{numSectionsAvailable > 1 && "s"}{" "}
-                available
+                {numSectionsAvailable > 0
+                  ? `${numSectionsAvailable} section${numSectionsAvailable > 1 && "s"} available`
+                  : "Complete!"}
               </div>
               <div className="created">
-                Started{" "}
+                Created{" "}
                 <abbr title={moment(date).format("LLLL")}>
                   {date.fromNow()}
                 </abbr>

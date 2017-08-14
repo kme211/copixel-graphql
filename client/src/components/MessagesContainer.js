@@ -16,7 +16,7 @@ const HeaderButton = styled.h2`
   background-color: #222;
   color: white;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 300;
   padding: 1rem;
   cursor: pointer;
 `;

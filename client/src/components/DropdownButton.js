@@ -14,6 +14,7 @@ const Wrapper = styled.div`
 
 const Children = styled.ul`
   position: absolute;
+  z-index: 10;
   right: 0;
   top: 2.5rem;
   width: 150px;
@@ -23,7 +24,10 @@ const Children = styled.ul`
   visibility: hidden;
   transform: scale(0.1);
   transition: transform 0.25s cubic-bezier(0.2, 2, 1, 1);
-  & > li {
+  text-align: left;
+  & > li > * {
+    text-align: inherit;
+    width: 100%;
     padding: 0.5rem 1rem;
     cursor: pointer;
     &:hover {
@@ -59,7 +63,7 @@ class DropdownButton extends Component {
         </button>
         <Children className={this.state.open ? "open" : "closed"}>
           {this.props.children.map((child, i) =>
-            <li key={`dropdown-${this.props.label}-${i}`}>
+            <li key={`dropdown-${this.props.label}-${i}`} onClick={this.toggleOpen}>
               {child}
             </li>
           )}

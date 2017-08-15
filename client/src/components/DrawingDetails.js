@@ -189,15 +189,10 @@ class DrawingDetails extends Component {
             messagesIconRotation: spring(this.state.showMessages ? 180 : 0)
           }}
         >
-          {({ messagesHeight, messagesIconRotation }) =>
+          {({ messagesHeight, messagesIconRotation }) => (
             <div>
               <BoardContainer
-                width={`${getCellSize(
-                  drawing.width,
-                  drawing.height,
-                  this.boardContainerEl,
-                  40
-                ) * drawing.width}px`}
+                width={`${getCellSize(drawing.width, drawing.height, this.boardContainerEl, 40) * drawing.width}px`}
                 innerRef={this.initializeBoardContainer}
                 height={`calc(100vh - ${messagesHeight + 5}rem)`}
               >
@@ -219,7 +214,7 @@ class DrawingDetails extends Component {
                           };
                     })}
                 >
-                  {interpolatingStyles =>
+                  {interpolatingStyles => (
                     <div>
                       <DrawingBoard
                         styles={interpolatingStyles}
@@ -264,7 +259,8 @@ class DrawingDetails extends Component {
                         <Button onClick={this.toggleDrawing}>
                           Reveal drawing!
                         </Button>}
-                    </div>}
+                    </div>
+                  )}
                 </StaggeredMotion>
               </BoardContainer>
               <MessagesContainer
@@ -275,7 +271,8 @@ class DrawingDetails extends Component {
                 participant={this.props.user}
                 messages={drawing.messages}
               />
-            </div>}
+            </div>
+          )}
         </Motion>
 
         {this.state.currentSection &&

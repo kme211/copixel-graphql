@@ -112,74 +112,85 @@ drawingSchema.pre("findOne", autopopulateDrawingSchema);
 drawingSchema.methods.getNeighborsOfSection = function(sectionX, sectionY) {
   console.log("getNeighborsOfSection", sectionX, sectionY);
 
-  const leftNeighbor = this.sections.find(
-    s => s.x === sectionX - 1 && s.y === sectionY
-  );
-  const rightNeighbor = this.sections.find(
-    s => s.x === sectionX + 1 && s.y === sectionY
-  );
-  const topNeighbor = this.sections.find(
-    s => s.x === sectionX && s.y === sectionY - 1
-  );
-  const bottomNeighbor = this.sections.find(
-    s => s.x === sectionX && s.y === sectionY + 1
-  );
-
-  const results = [
+  let neighbors = [
     {
-      neighbor: leftNeighbor,
-      filter: pixel => {
-        return (
-          pixel.x ===
-          (sectionX - 1) * this.sectionSizePx +
-            (this.sectionSizePx - this.pixelSize)
-        );
-      },
+      x: sectionX - 1,
+      y: sectionY,
       relativePosition: "LEFT"
     },
     {
-      neighbor: rightNeighbor,
-      filter: pixel => {
-        return pixel.x === (sectionX - 1) * this.sectionSizePx;
-      },
+      x: sectionX + 1,
+      y: sectionY,
       relativePosition: "RIGHT"
     },
     {
-      neighbor: topNeighbor,
-      filter: pixel => {
-        return (
-          pixel.x ===
-          (sectionY - 1) * this.sectionSizePx +
-            (this.sectionSizePx - this.pixelSize)
-        );
-      },
+      x: sectionX,
+      y: sectionY - 1,
       relativePosition: "TOP"
     },
     {
-      neighbor: bottomNeighbor,
-      filter: pixel => {
-        return pixel.y === (sectionY + 1) * this.sectionSizePx;
-      },
+      x: sectionX,
+      y: sectionY + 1,
       relativePosition: "BOTTOM"
     }
   ];
 
-  const neighbors = [];
-
-  for (let result of results) {
-    if (result.neighbor) {
-      const { axis, axisCoord } = result;
-      const neighbor = {
-        x: result.neighbor.x,
-        y: result.neighbor.y,
-        relativePosition: result.relativePosition,
-        pixels: result.neighbor.pixels.filter(result.filter)
-      };
-      neighbors.push(neighbor);
+  // These filters are used to return only the pixels
+  // that are on the edge of a neighboring section
+  const filters = [
+    // LEFT
+    pixel => {
+      return (
+        pixel.x ===
+        (sectionX - 1) * this.sectionSizePx +
+          (this.sectionSizePx - this.pixelSize)
+      );
+    },
+    // RIGHT
+    pixel => {
+      return pixel.x === (sectionX - 1) * this.sectionSizePx;
+    },
+    // TOP
+    pixel => {
+      return (
+        pixel.x ===
+        (sectionY - 1) * this.sectionSizePx +
+          (this.sectionSizePx - this.pixelSize)
+      );
+    },
+    // BOTTOM
+    pixel => {
+      return pixel.y === (sectionY + 1) * this.sectionSizePx;
     }
+  ];
+
+  for (let i = 0; i < 4; i++) {
+    let neighbor = neighbors[i];
+    const outOfBounds =
+      neighbor.x < 0 ||
+      neighbor.y < 0 ||
+      neighbor.x >= this.width ||
+      neighbor.y >= this.height;
+
+    if (outOfBounds) {
+      neighbors = [...neighbors.slice(0, i), null, ...neighbors.slice(i + 1)];
+      continue;
+    }
+
+    const result = this.sections.find(
+      s => s.x === neighbor.x && s.y === neighbor.y
+    );
+
+    neighbors = [
+      ...neighbors.slice(0, i),
+      Object.assign({}, neighbor, {
+        pixels: result ? result.pixels.filter(filters[i]) : []
+      }),
+      ...neighbors.slice(i + 1)
+    ];
   }
 
-  return neighbors;
+  return neighbors.filter(n => n);
 };
 
 const Drawing = mongoose.model("Drawing", drawingSchema);

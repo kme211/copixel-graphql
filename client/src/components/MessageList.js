@@ -29,7 +29,7 @@ const Author = styled.span`
 
 class MessageList extends Component {
   static propTypes = {
-    user: PropTypes.object.isRequired,
+    c: PropTypes.object.isRequired,
     userIsScrolling: PropTypes.bool.isRequired,
     messages: PropTypes.array.isRequired,
     participant: PropTypes.object.isRequired
@@ -51,6 +51,13 @@ class MessageList extends Component {
   };
 
   render() {
+    if (!this.props.user)
+      return (
+        <Wrapper>
+          <Message>You must be logged in to see messages</Message>
+        </Wrapper>
+      );
+
     const zone = moment.tz.guess();
     const regex = getUserMentionRegex(this.props.user.username);
 

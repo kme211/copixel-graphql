@@ -25,7 +25,7 @@ const Wrapper = styled.div`position: relative;`;
 
 class DrawingBoard extends Component {
   render() {
-    const { width, height, cellSize } = this.props;
+    const { width, height, cellSize, user } = this.props;
     const grid = [];
     let i = 0;
     for (let y = 0; y < height; y++) {
@@ -36,21 +36,28 @@ class DrawingBoard extends Component {
         const neighboringSections = this.props.sections.filter(
           isNeighboringSection(x, y)
         );
+
+        const allNeighboringSectionsComplete =
+          neighboringSections.length &&
+          neighboringSections.every(s => s.status === "COMPLETED");
+
         const status = section ? section.status : "NOT_STARTED";
-        let enabled =
-          status === "NOT_STARTED"
-            ? neighboringSections.length &&
-              neighboringSections.every(s => s.status === "COMPLETED")
-            : false;
+
+        let enabled = status === "NOT_STARTED"
+          ? allNeighboringSectionsComplete
+          : false;
 
         if (
+          user &&
           status === "IN_PROGRESS" &&
-          section.creator._id === this.props.user._id
+          section.creator._id === user._id
         ) {
           console.log("BELONGS TO CURRENT USER");
           enabled = true;
         }
         if (!this.props.sections.length) enabled = true;
+
+        if (!user) enabled = false;
         const styles = this.props.styles[i++];
         const cell = (
           <Cell

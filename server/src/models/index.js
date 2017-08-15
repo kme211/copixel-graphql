@@ -110,8 +110,6 @@ drawingSchema.pre("find", autopopulateDrawingSchema);
 drawingSchema.pre("findOne", autopopulateDrawingSchema);
 
 drawingSchema.methods.getNeighborsOfSection = function(sectionX, sectionY) {
-  console.log("getNeighborsOfSection", sectionX, sectionY);
-
   let neighbors = [
     {
       x: sectionX - 1,
@@ -139,29 +137,19 @@ drawingSchema.methods.getNeighborsOfSection = function(sectionX, sectionY) {
   // that are on the edge of a neighboring section
   const filters = [
     // LEFT
-    pixel => {
-      return (
-        pixel.x ===
-        (sectionX - 1) * this.sectionSizePx +
-          (this.sectionSizePx - this.pixelSize)
-      );
-    },
+    pixel =>
+      pixel.x ===
+      (sectionX - 1) * this.sectionSizePx +
+        (this.sectionSizePx - this.pixelSize),
     // RIGHT
-    pixel => {
-      return pixel.x === (sectionX - 1) * this.sectionSizePx;
-    },
+    pixel => pixel.x === (sectionX - 1) * this.sectionSizePx,
     // TOP
-    pixel => {
-      return (
-        pixel.x ===
-        (sectionY - 1) * this.sectionSizePx +
-          (this.sectionSizePx - this.pixelSize)
-      );
-    },
+    pixel =>
+      pixel.x ===
+      (sectionY - 1) * this.sectionSizePx +
+        (this.sectionSizePx - this.pixelSize),
     // BOTTOM
-    pixel => {
-      return pixel.y === (sectionY + 1) * this.sectionSizePx;
-    }
+    pixel => pixel.y === (sectionY + 1) * this.sectionSizePx
   ];
 
   for (let i = 0; i < 4; i++) {

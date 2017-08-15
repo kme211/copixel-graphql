@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import moment from "moment-timezone";
 import flatten from "lodash/flatten";
 import compact from "lodash/compact";
+import { getPrettyDate, isDateAfter } from "../utils/dateUtils";
 import getUserMentionRegex from "../utils/getUserMentionRegex";
 
 const Message = styled.div`
@@ -58,19 +58,16 @@ class MessageList extends Component {
         </Wrapper>
       );
 
-    const zone = moment.tz.guess();
     const regex = getUserMentionRegex(this.props.user.username);
 
     let messagesWithDates = this.props.messages.map((m, i, arr) => {
-      const date = moment(m.created).tz(zone);
       const prevDate = i > 0 ? arr[i - 1].created : null;
       let includeDate = true;
-      if (prevDate)
-        includeDate = moment(m.created).isAfter(moment(prevDate), "minute");
+      if (prevDate) includeDate = isDateAfter(m.crated, prevDate, "minute");
       return [
         includeDate
           ? <DT key={`dt-${m.id}`}>
-              {moment(date).tz(zone).format("lll")}
+              {getPrettyDate(m.created, "long")}
             </DT>
           : null,
         <Message key={m.id}>

@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import moment from "moment-timezone";
+import { getPrettyDate } from "../utils/dateUtils";
 import LoadingSpinner from "./LoadingSpinner";
 
 const DrawingLink = styled(Link)`
@@ -70,17 +71,16 @@ const DrawingsList = ({
 
   return (
     <div>
-      {drawings.map(ch => {
-        const date = moment(ch.created).tz(zone);
-        const numSectionsAvailable = ch.sectionsNotStarted;
+      {drawings.map(drawing => {
+        const numSectionsAvailable = drawing.sectionsNotStarted;
         return (
           <div
-            key={ch.id}
-            className={"drawing " + (ch.id < 0 ? "optimistic" : "")}
+            key={drawing.id}
+            className={"drawing " + (drawing.id < 0 ? "optimistic" : "")}
           >
-            <DrawingLink to={ch.id < 0 ? `/` : `/drawing/${ch.id}`}>
+            <DrawingLink to={drawing.id < 0 ? `/` : `/drawing/${drawing.id}`}>
               <div className="name">
-                {ch.name}
+                {drawing.name}
               </div>
               <div className="left">
                 {numSectionsAvailable > 0
@@ -89,8 +89,8 @@ const DrawingsList = ({
               </div>
               <div className="created">
                 Created{" "}
-                <abbr title={moment(date).format("LLLL")}>
-                  {date.fromNow()}
+                <abbr title={getPrettyDate(drawing.created, "long")}>
+                  {getPrettyDate(drawing.created, "relative")}
                 </abbr>
               </div>
             </DrawingLink>

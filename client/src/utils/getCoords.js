@@ -1,4 +1,10 @@
-export default function getCoords(sectionX, sectionY, blockSize, sectionSize, syntheticEvent) {
+/**
+ * 
+ * @param {Number} blockSize 
+ * @param {Event} syntheticEvent 
+ * @return {Array}
+ */
+export default function getCoords(blockSize, syntheticEvent) {
   const e = syntheticEvent.nativeEvent;
   let { offsetX, offsetY } = e;
 
@@ -10,9 +16,7 @@ export default function getCoords(sectionX, sectionY, blockSize, sectionSize, sy
   }
 
   return [
-    Math.floor(offsetX / blockSize) * blockSize +
-      sectionX * sectionSize,
-    Math.floor(offsetY / blockSize) * blockSize +
-      sectionY * sectionSize
+    Math.floor(offsetX / blockSize) * blockSize,
+    Math.floor(offsetY / blockSize) * blockSize
   ];
 }

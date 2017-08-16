@@ -138,7 +138,7 @@ drawingSchema.methods.getNeighborsOfSection = function(sectionX, sectionY) {
     },
     {
       x: sectionX + 1,
-      y: sectionY + 1,
+      y: sectionY - 1,
       relativePosition: ["TOP", "RIGHT"]
     },
     {
@@ -158,7 +158,7 @@ drawingSchema.methods.getNeighborsOfSection = function(sectionX, sectionY) {
   const filters = {
     LEFT: pixel => pixel.x === sectionX * this.sectionSizePx - this.pixelSize,
     RIGHT: pixel => pixel.x === (sectionX + 1) * this.sectionSizePx,
-    TOP: pixel => pixel.x === sectionY * this.sectionSizePx - this.pixelSize,
+    TOP: pixel => pixel.y === sectionY * this.sectionSizePx - this.pixelSize,
     BOTTOM: pixel => pixel.y === (sectionY + 1) * this.sectionSizePx
   };
 
@@ -195,10 +195,9 @@ drawingSchema.methods.getNeighborsOfSection = function(sectionX, sectionY) {
       neighbors = [
         ...neighbors.slice(0, i),
         Object.assign({}, neighbor, {
-          pixels:
-            result && result.pixels
-              ? [result.pixels.find(p => filters[pos1](p) && filters[pos2](p))] // find that corner pixel!
-              : []
+          pixels: result && result.pixels
+            ? [result.pixels.find(p => filters[pos1](p) && filters[pos2](p))] // find that corner pixel!
+            : []
         }),
         ...neighbors.slice(i + 1)
       ];

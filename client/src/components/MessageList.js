@@ -29,7 +29,7 @@ const Author = styled.span`
 
 class MessageList extends Component {
   static propTypes = {
-    c: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired,
     userIsScrolling: PropTypes.bool.isRequired,
     messages: PropTypes.array.isRequired,
     participant: PropTypes.object.isRequired

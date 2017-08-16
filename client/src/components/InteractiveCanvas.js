@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import getCoords from "../utils/getCoords";
+import { getPixelCoords } from "../utils/pixelUtils";
 import fill from "../utils/fill";
 import Canvas from "./Canvas";
 import { COLORS, BRUSH, ERASER, PAINT_BUCKET, EYE_DROPPER } from "../constants";
@@ -26,13 +26,7 @@ class InteractiveCanvas extends Component {
       y: sectionY
     } = this.props;
     const isHighlighting = !isDrawing && currentTool !== EYE_DROPPER;
-    const [x, y] = getCoords(
-      sectionX,
-      sectionY,
-      this.props.pixelSize,
-      this.props.sectionSizePx,
-      e
-    );
+    const [x, y] = getPixelCoords(this.props.pixelSize, e);
     const currentPixel = pixels[`${x},${y}`];
     if (!currentPixel) return console.log("pixel not found", `${x},${y}`);
 
@@ -111,6 +105,7 @@ class InteractiveCanvas extends Component {
         onMouseUp={this.stopDraw}
         onTouchEnd={this.stopDraw}
         onMouseOut={this.stopEverything}
+        currentColor={this.props.currentColor}
         pixelSize={this.props.pixelSize}
         sectionSizePx={this.props.sectionSizePx}
         highlightedPos={this.props.highlightedPos}

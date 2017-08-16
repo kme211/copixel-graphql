@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
-import generatePixels from "../utils/generatePixels";
+import * as pixelUtils from "../utils/pixelUtils";
 import Button from "./Button";
 import GridBackground from "./GridBackground";
 import InteractiveCanvas from "./InteractiveCanvas";
@@ -8,39 +8,16 @@ import ToolBar from "./ToolBar";
 import Neighbors from "./Neighbors";
 import { EYE_DROPPER, BRUSH, COLORS } from "../constants";
 
-const canvasContainerStyles = ({
-  width,
-  height,
-  top,
-  right,
-  bottom,
-  left
-}) => css`
-  top: ${top}px;
-  right: ${right}px;
-  bottom: ${bottom}px;
-  left: ${left}px;
-  position: absolute;
-  background: white;
-  overflow: hidden;
-  width: ${width}px;
-  height: ${height}px;
-`;
-
-const CanvasContainer = styled.div`${canvasContainerStyles};`;
-
-const containerStyles = ({ width, height }) => css`
+const Container = styled.div`
   position: relative;
   margin: 0 auto;
   box-shadow: 6px 0px 15px -6px rgba(50, 50, 50, 0.25), -6px 0px 15px -6px rgba(50, 50, 50, 0.25);
   border: 1px solid #c8ccce; 
 `;
 
-const Container = styled.div`${containerStyles};`;
-
 const Wrapper = styled.div`
   display: flex;
-  background: #ccc;
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAANUlEQVQoU2NUUlL6z0AEYCRZ4cRNfFjNzff7BBaHmwhSCBOE6UAWGywKsfkGwzOEgpLocAQA76Er/cb+8aMAAAAASUVORK5CYII=);
   justify-content: space-between;
   margin-bottom: 16px;
   flex-direction: column-reverse;
@@ -61,7 +38,7 @@ class Editor extends Component {
   };
 
   componentDidMount() {
-    let pixels = generatePixels({
+    let sectionPixels = pixelUtils.generatePixels({
       blockSizePx: this.props.pixelSize,
       sectionX: this.props.x,
       sectionY: this.props.y,
@@ -70,16 +47,18 @@ class Editor extends Component {
       color: "#fff"
     });
 
-    for (let neighbor of this.props.neighbors) {
-      console.log("n pxs", neighbor.pixels);
-      for (let px of neighbor.pixels) {
-        console.log("px", `${px.x},${px.y}`, px.color);
-        pixels[`${px.x},${px.y}`] = { color: px.color, locked: true };
-      }
-    }
+    let neighborPixels = pixelUtils.getNeighborPixels(this.props.neighbors);
+    let pixels = pixelUtils.getLocalizedPixels(
+      this.props.pixelSize,
+      sectionPixels,
+      neighborPixels
+    );
+    pixels = pixelUtils.pixelsToObject(
+      pixels,
+      pixel => `${pixel.localX},${pixel.localY}`
+    );
 
     this.setState({ pixels });
-    console.log("pixels", pixels);
   }
 
   toggleGrid = () => {
@@ -111,16 +90,22 @@ class Editor extends Component {
   };
 
   onSave = () => {
-    const pixelsArray = Object.keys(this.state.pixels).map(position => {
-      const [x, y] = position.split(",").map(parseFloat);
-      const pixel = {
-        x,
-        y,
-        color: this.state.pixels[position].color
-      };
-      return pixel;
-    });
-    this.props.savePixels(pixelsArray);
+    const { pixelSize, sectionSizePx, x, y } = this.props;
+    const minX = this.props.x * sectionSizePx;
+    const maxX = minX + sectionSizePx - pixelSize;
+    const minY = this.props.y * sectionSizePx;
+    const maxY = minY + sectionSizePx - pixelSize;
+    const pixels = pixelUtils
+      .pixelsToArray(this.state.pixels)
+      .filter(pixel => {
+        const outOfBounds =
+          pixel.x < minX || pixel.x > maxX || pixel.y < minY || pixel.y > maxY;
+        return !outOfBounds;
+      })
+      .map(pixel =>
+        Object.assign({}, { color: pixel.color, x: pixel.x, y: pixel.y })
+      );
+    this.props.savePixels(pixels);
   };
 
   render() {
@@ -152,7 +137,9 @@ class Editor extends Component {
     return (
       <div>
         <Wrapper>
-          <Container width={canvasWidth} height={canvasHeight}>
+          <Container
+            style={{ width: canvasWidth + 2, height: canvasHeight + 2 }}
+          >
             <InteractiveCanvas
               x={x}
               y={y}

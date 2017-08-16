@@ -52,17 +52,17 @@ class Canvas extends Component {
     // redraw pixels
     for (var pos in pixels) {
       let [x, y] = pos.split(",").map(parseFloat);
-      if (sectionX >= 0) {
-        const localCoords = getLocalCoords(
-          x,
-          y,
-          sectionX,
-          sectionY,
-          this.props.sectionSizePx
-        );
-        x = localCoords[0];
-        y = localCoords[1];
-      }
+      // if (sectionX >= 0) {
+      //   const localCoords = getLocalCoords(
+      //     x,
+      //     y,
+      //     sectionX,
+      //     sectionY,
+      //     this.props.sectionSizePx
+      //   );
+      //   x = localCoords[0];
+      //   y = localCoords[1];
+      // }
 
       if (embed) {
         x = Math.ceil(x * scale);
@@ -73,9 +73,16 @@ class Canvas extends Component {
 
       let fillStyle = null;
 
-      if (highlightedPos && highlightedPos[0] === x && highlightedPos[1] === y)
+      if (
+        highlightedPos &&
+        highlightedPos[0] === x &&
+        highlightedPos[1] === y
+      ) {
+        console.log("currentColor", currentColor);
         fillStyle = currentTool === ERASER ? COLORS.eraser : currentColor;
-      else if (pixels[pos]) fillStyle = pixels[pos].color;
+      } else if (pixels[pos]) {
+        fillStyle = pixels[pos].color;
+      }
 
       if (fillStyle) {
         ctx.fillStyle = fillStyle;

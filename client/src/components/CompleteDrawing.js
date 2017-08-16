@@ -3,12 +3,8 @@ import { gql, graphql } from "react-apollo";
 import Canvas from "./Canvas";
 
 class CompleteDrawing extends Component {
-  constructor(props) {
-    super(props);
-
-    this.ready = false;
-    this.pixels = {};
-  }
+  ready = false;
+  pixels = {};
 
   setPixels = drawing => {
     if (this.ready) return;
@@ -17,7 +13,7 @@ class CompleteDrawing extends Component {
       .map(s => s.pixels)
       .reduce((a, b) => a.concat(b));
     for (let px of pixelsArr) {
-      this.pixels[`${px.x},${px.y}`] = px.color;
+      this.pixels[`${px.x},${px.y}`] = { color: px.color };
     }
     this.ready = true;
   };

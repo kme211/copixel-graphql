@@ -1,11 +1,10 @@
 import React, { Component } from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import * as pixelUtils from "../utils/pixelUtils";
 import Button from "./Button";
 import GridBackground from "./GridBackground";
 import InteractiveCanvas from "./InteractiveCanvas";
 import ToolBar from "./ToolBar";
-import Neighbors from "./Neighbors";
 import { EYE_DROPPER, BRUSH, COLORS } from "../constants";
 
 const Container = styled.div`
@@ -91,9 +90,9 @@ class Editor extends Component {
 
   onSave = () => {
     const { pixelSize, sectionSizePx, x, y } = this.props;
-    const minX = this.props.x * sectionSizePx;
+    const minX = x * sectionSizePx;
     const maxX = minX + sectionSizePx - pixelSize;
-    const minY = this.props.y * sectionSizePx;
+    const minY = y * sectionSizePx;
     const maxY = minY + sectionSizePx - pixelSize;
     const pixels = pixelUtils
       .pixelsToArray(this.state.pixels)

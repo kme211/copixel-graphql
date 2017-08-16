@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import getLocalCoords from "../utils/getLocalCoords";
 import { COLORS, ERASER } from "../constants";
 import PropTypes from "prop-types";
 
@@ -34,9 +33,7 @@ class Canvas extends Component {
       width,
       height,
       currentTool,
-      currentColor,
-      x: sectionX,
-      y: sectionY
+      currentColor
     } = this.props;
     let scale = 1;
 
@@ -52,17 +49,6 @@ class Canvas extends Component {
     // redraw pixels
     for (var pos in pixels) {
       let [x, y] = pos.split(",").map(parseFloat);
-      // if (sectionX >= 0) {
-      //   const localCoords = getLocalCoords(
-      //     x,
-      //     y,
-      //     sectionX,
-      //     sectionY,
-      //     this.props.sectionSizePx
-      //   );
-      //   x = localCoords[0];
-      //   y = localCoords[1];
-      // }
 
       if (embed) {
         x = Math.ceil(x * scale);

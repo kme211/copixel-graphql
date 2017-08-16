@@ -21,14 +21,18 @@ class InteractiveCanvas extends Component {
       isDrawing,
       currentColor,
       currentTool,
-      pixels,
-      x: sectionX,
-      y: sectionY
+      pixels
     } = this.props;
     const isHighlighting = !isDrawing && currentTool !== EYE_DROPPER;
     const [x, y] = getPixelCoords(this.props.pixelSize, e);
     const currentPixel = pixels[`${x},${y}`];
     if (!currentPixel) return console.log("pixel not found", `${x},${y}`);
+    if (
+      isDrawing &&
+      currentTool === BRUSH &&
+      currentPixel.color === currentColor
+    )
+      return;
 
     if (isHighlighting) {
       if (currentPixel.locked) return;

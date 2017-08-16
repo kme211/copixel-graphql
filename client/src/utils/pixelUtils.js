@@ -88,8 +88,6 @@ export function getLocalizedPixels(pixelSize, ...pixels) {
   return localizedPixels;
 }
 
-function removeOutOfBoundsPixels() {}
-
 /**
  * Converts an object of pixels to an array of pixels
  * @param {Object} pixelsObj 

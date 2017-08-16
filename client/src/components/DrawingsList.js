@@ -81,7 +81,7 @@ const DrawingsList = ({
               </div>
               <div className="left">
                 {numSectionsAvailable > 0
-                  ? `${numSectionsAvailable} section${numSectionsAvailable > 1 && "s"} available`
+                  ? `${numSectionsAvailable} section${numSectionsAvailable > 1 ? "s" : ""} available`
                   : "Complete!"}
               </div>
               <div className="created">

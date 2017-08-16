@@ -47,11 +47,10 @@ class DrawingBoard extends Component {
           ? allNeighboringSectionsComplete
           : false;
 
-        if (
-          user &&
-          status === "IN_PROGRESS" &&
-          section.creator._id === user._id
-        ) {
+        const belongsToUser =
+          user && section && section.creator._id === user._id;
+
+        if (status === "IN_PROGRESS" && belongsToUser) {
           console.log("BELONGS TO CURRENT USER");
           enabled = true;
         }
@@ -71,6 +70,7 @@ class DrawingBoard extends Component {
             size={cellSize}
             status={status}
             enabled={enabled}
+            user={belongsToUser ? user : null}
             onCellClick={this.props.onCellClick}
           />
         );

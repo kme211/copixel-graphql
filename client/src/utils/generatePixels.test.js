@@ -10,10 +10,10 @@ test("generates pixels correctly for pos: 0,0", () => {
     blockSizePx: 1
   };
   expect(generatePixels(options)).toEqual({
-    "0,0": "#ffffff",
-    "0,1": "#ffffff",
-    "1,0": "#ffffff",
-    "1,1": "#ffffff"
+    "0,0": { color: "#ffffff" },
+    "0,1": { color: "#ffffff" },
+    "1,0": { color: "#ffffff" },
+    "1,1": { color: "#ffffff" }
   });
 });
 
@@ -28,10 +28,10 @@ test("generates pixels correctly for pos: 20,20", () => {
   };
 
   expect(generatePixels(options)).toEqual({
-    "40,40": "#000000",
-    "40,41": "#000000",
-    "41,40": "#000000",
-    "41,41": "#000000"
+    "40,40": { color: "#000000" },
+    "40,41": { color: "#000000" },
+    "41,40": { color: "#000000" },
+    "41,41": { color: "#000000" }
   });
 });
 
@@ -46,9 +46,9 @@ test("generates pixels correctly for pos: 0,0 with a 20px block size", () => {
   };
 
   expect(generatePixels(options)).toEqual({
-    "0,0": "#000000",
-    "0,20": "#000000",
-    "20,0": "#000000",
-    "20,20": "#000000"
+    "0,0": { color: "#000000" },
+    "0,20": { color: "#000000" },
+    "20,0": { color: "#000000" },
+    "20,20": { color: "#000000" }
   });
 });

@@ -33,17 +33,21 @@ class InteractiveCanvas extends Component {
       this.props.sectionSizePx,
       e
     );
+    const currentPixel = pixels[`${x},${y}`];
+    if (!currentPixel) return console.log("pixel not found", `${x},${y}`);
 
     if (isHighlighting) {
-      updateState({ highlightedPos: `${x},${y}` });
+      if (currentPixel.locked) return;
+      updateState({ highlightedPos: [x, y] });
     } else if (isDrawing) {
       let updatedPixels;
       if (currentTool === EYE_DROPPER) {
         return updateState({
-          currentColor: pixels[`${x},${y}`],
+          currentColor: pixels[`${x},${y}`].color,
           currentTool: BRUSH
         });
       }
+      if (currentPixel.locked) return;
       if (currentTool === PAINT_BUCKET) {
         updatedPixels = fill(
           pixels,
@@ -52,8 +56,11 @@ class InteractiveCanvas extends Component {
           this.props.pixelSize
         );
       } else {
+        const updatedPixel = Object.assign({}, currentPixel, {
+          color: currentTool === ERASER ? COLORS.eraser : currentColor
+        });
         updatedPixels = Object.assign({}, pixels, {
-          [`${x},${y}`]: currentTool === ERASER ? COLORS.eraser : currentColor
+          [`${x},${y}`]: updatedPixel
         });
       }
       updateState({ pixels: updatedPixels });
@@ -106,6 +113,7 @@ class InteractiveCanvas extends Component {
         onMouseOut={this.stopEverything}
         pixelSize={this.props.pixelSize}
         sectionSizePx={this.props.sectionSizePx}
+        highlightedPos={this.props.highlightedPos}
       />
     );
   }

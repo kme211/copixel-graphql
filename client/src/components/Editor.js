@@ -27,18 +27,16 @@ const canvasContainerStyles = ({
   height: ${height}px;
 `;
 
-const CanvasContainer = styled.div`${canvasContainerStyles}`;
+const CanvasContainer = styled.div`${canvasContainerStyles};`;
 
 const containerStyles = ({ width, height }) => css`
   position: relative;
-  width: ${width + 2}px;
-  height: ${height + 2}px;
   margin: 0 auto;
   box-shadow: 6px 0px 15px -6px rgba(50, 50, 50, 0.25), -6px 0px 15px -6px rgba(50, 50, 50, 0.25);
   border: 1px solid #c8ccce; 
 `;
 
-const Container = styled.div`${containerStyles}`;
+const Container = styled.div`${containerStyles};`;
 
 const Wrapper = styled.div`
   display: flex;
@@ -63,7 +61,7 @@ class Editor extends Component {
   };
 
   componentDidMount() {
-    const pixels = generatePixels({
+    let pixels = generatePixels({
       blockSizePx: this.props.pixelSize,
       sectionX: this.props.x,
       sectionY: this.props.y,
@@ -71,8 +69,17 @@ class Editor extends Component {
       heightPx: this.props.sectionSizePx,
       color: "#fff"
     });
+
+    for (let neighbor of this.props.neighbors) {
+      console.log("n pxs", neighbor.pixels);
+      for (let px of neighbor.pixels) {
+        console.log("px", `${px.x},${px.y}`, px.color);
+        pixels[`${px.x},${px.y}`] = { color: px.color, locked: true };
+      }
+    }
+
     this.setState({ pixels });
-    console.log('pixels', pixels)
+    console.log("pixels", pixels);
   }
 
   toggleGrid = () => {
@@ -105,16 +112,16 @@ class Editor extends Component {
 
   onSave = () => {
     const pixelsArray = Object.keys(this.state.pixels).map(position => {
-      const [x, y] = position.split(',').map(parseFloat);
+      const [x, y] = position.split(",").map(parseFloat);
       const pixel = {
         x,
         y,
-        color: this.state.pixels[position]
+        color: this.state.pixels[position].color
       };
       return pixel;
     });
     this.props.savePixels(pixelsArray);
-  }
+  };
 
   render() {
     const {
@@ -130,80 +137,56 @@ class Editor extends Component {
     const { neighbors, x, y, pixelSize, sectionSizePx } = this.props;
     const topNeighbor = neighbors.find(n => n.relativePosition === "TOP");
     const rightNeighbor = neighbors.find(n => n.relativePosition === "RIGHT");
-    const bottomNeighbor = neighbors.find(
-      n => n.relativePosition === "BOTTOM"
-    );
+    const bottomNeighbor = neighbors.find(n => n.relativePosition === "BOTTOM");
     const leftNeighbor = neighbors.find(n => n.relativePosition === "LEFT");
+
+    const canvasWidth =
+      sectionSizePx +
+      (leftNeighbor ? pixelSize : 0) +
+      (rightNeighbor ? pixelSize : 0);
+    const canvasHeight =
+      sectionSizePx +
+      (topNeighbor ? pixelSize : 0) +
+      (bottomNeighbor ? pixelSize : 0);
 
     return (
       <div>
-          <Wrapper>
-            <Container
-              width={
-                this.props.sectionSizePx +
-                  (leftNeighbor ? pixelSize : 0) +
-                  (rightNeighbor ? pixelSize : 0)
-              }
-              height={
-                sectionSizePx +
-                  (topNeighbor ? pixelSize : 0) +
-                  (bottomNeighbor ? pixelSize : 0)
-              }
-            >
-              <CanvasContainer
-                width={sectionSizePx}
-                height={sectionSizePx}
-                top={topNeighbor ? pixelSize : bottomNeighbor ? "auto" : "0"}
-                right={rightNeighbor ? pixelSize : leftNeighbor ? "auto" : "0"}
-                bottom={bottomNeighbor ? pixelSize : topNeighbor ? "auto" : "0"}
-                left={leftNeighbor ? pixelSize : rightNeighbor ? "auto" : "0"}
-              >
-                <InteractiveCanvas
-                  x={x}
-                  y={y}
-                  height={sectionSizePx}
-                  width={sectionSizePx}
-                  interactive={true}
-                  isDrawing={isDrawing}
-                  isHighligting={isHighligting}
-                  highlightedPos={highlightedPos}
-                  pixels={pixels}
-                  updateState={this.updateState}
-                  currentTool={currentTool}
-                  currentColor={currentColor}
-                  pixelSize={this.props.pixelSize}
-                  sectionSizePx={this.props.sectionSizePx}
-                />
-                {isGridOn &&
-                  <GridBackground
-                    pixelSize={this.props.pixelSize}
-                    height={this.props.sectionSizePx}
-                    width={this.props.sectionSizePx}
-                  />}
-              </CanvasContainer>
-              <Neighbors
-                sectionSizePx={this.props.sectionSizePx}
-                pixelSize={this.props.pixelSize}
-                top={topNeighbor}
-                right={rightNeighbor}
-                bottom={bottomNeighbor}
-                left={leftNeighbor}
-                centerX={x}
-                centerY={y}
-                onClick={this.setCurrentColorToNeighborColor}
-              />
-            </Container>
-            <ToolBar
-              isGridOn={isGridOn}
+        <Wrapper>
+          <Container width={canvasWidth} height={canvasHeight}>
+            <InteractiveCanvas
+              x={x}
+              y={y}
+              height={canvasWidth}
+              width={canvasHeight}
+              interactive={true}
+              isDrawing={isDrawing}
+              isHighligting={isHighligting}
+              highlightedPos={highlightedPos}
+              pixels={pixels}
+              updateState={this.updateState}
               currentTool={currentTool}
               currentColor={currentColor}
-              toggleGrid={this.toggleGrid}
-              updateTool={this.updateTool}
-              updateColor={this.updateColor}
+              pixelSize={this.props.pixelSize}
+              sectionSizePx={this.props.sectionSizePx}
             />
-          </Wrapper>
+            {isGridOn &&
+              <GridBackground
+                pixelSize={this.props.pixelSize}
+                height={canvasHeight}
+                width={canvasWidth}
+              />}
+          </Container>
+          <ToolBar
+            isGridOn={isGridOn}
+            currentTool={currentTool}
+            currentColor={currentColor}
+            toggleGrid={this.toggleGrid}
+            updateTool={this.updateTool}
+            updateColor={this.updateColor}
+          />
+        </Wrapper>
 
-          <Button onClick={this.onSave}>Save</Button>
+        <Button onClick={this.onSave}>Save</Button>
       </div>
     );
   }

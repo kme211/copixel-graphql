@@ -5,8 +5,12 @@ export default function fill(pixels, position, newColor, blockSize) {
 
   function grow(x, y) {
     const pos = `${x},${y}`;
-    if (newPixels[pos] === oldColor && newPixels[pos] !== newColor) {
-      newPixels[pos] = newColor;
+    if (
+      !newPixels.locked &&
+      newPixels[pos].color === oldColor &&
+      newPixels[pos].color !== newColor
+    ) {
+      newPixels[pos] = Object.assign({}, newPixels[pos], { color: newColor });
       grow(x, y - blockSize);
       grow(x + blockSize, y);
       grow(x, y + blockSize);

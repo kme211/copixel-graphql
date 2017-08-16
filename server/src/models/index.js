@@ -181,6 +181,7 @@ drawingSchema.methods.getNeighborsOfSection = function(sectionX, sectionY) {
 
     if (typeof neighbor.relativePosition === "string") {
       const pos = neighbor.relativePosition;
+      console.log("pos", pos);
       neighbors = [
         ...neighbors.slice(0, i),
         Object.assign({}, neighbor, {
@@ -190,12 +191,14 @@ drawingSchema.methods.getNeighborsOfSection = function(sectionX, sectionY) {
       ];
     } else {
       const [pos1, pos2] = neighbor.relativePosition;
+      console.log(pos1, pos2);
       neighbors = [
         ...neighbors.slice(0, i),
         Object.assign({}, neighbor, {
-          pixels: result
-            ? [result.pixels.find(p => filters[pos1] && filters[pos2])] // find that corner pixel!
-            : []
+          pixels:
+            result && result.pixels
+              ? [result.pixels.find(p => filters[pos1](p) && filters[pos2](p))] // find that corner pixel!
+              : []
         }),
         ...neighbors.slice(i + 1)
       ];

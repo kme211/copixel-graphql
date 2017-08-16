@@ -73,9 +73,9 @@ class Canvas extends Component {
 
       let fillStyle = null;
 
-      if (`${x},${y}` === highlightedPos)
+      if (highlightedPos && highlightedPos[0] === x && highlightedPos[1] === y)
         fillStyle = currentTool === ERASER ? COLORS.eraser : currentColor;
-      else if (pixels[pos]) fillStyle = pixels[pos];
+      else if (pixels[pos]) fillStyle = pixels[pos].color;
 
       if (fillStyle) {
         ctx.fillStyle = fillStyle;

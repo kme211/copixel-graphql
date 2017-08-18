@@ -96,6 +96,11 @@ class AddDrawing extends Component {
             name="public"
             checkedItem={this.state.public ? "true" : "false"}
           />
+          <p>
+            {this.state.public
+              ? "Drawing will show up on the main page for others to join."
+              : "Drawing will not show up on the main page but anyone with the link can join."}
+          </p>
           <SubmitButton value="add new drawing" onClick={this.onFormSubmit} />
         </form>
       </Inner>

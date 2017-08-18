@@ -13,7 +13,7 @@ const Nav = styled.nav`
 `;
 
 const activeStyle = {
-  color: "white"
+  color: "#9ED0E0"
 };
 
 const Wrapper = styled.div`
@@ -34,7 +34,7 @@ const Wrapper = styled.div`
     font-size: inherit;
     font-family: inherit;
     background: transparent;
-    color: inherit;
+    color: white;
     margin-right: 1rem;
     cursor: pointer;
     transition: color 0.4s;
@@ -51,7 +51,7 @@ const Wrapper = styled.div`
   }
 `;
 
-const Header = props =>
+const Header = props => (
   <Wrapper>
     <Inner>
       <Nav>
@@ -61,6 +61,10 @@ const Header = props =>
           {props.isLoggedIn() &&
             <NavLink to="/new" activeStyle={activeStyle}>
               new
+            </NavLink>}
+          {props.isLoggedIn() &&
+            <NavLink to="/draw" activeStyle={activeStyle}>
+              draw
             </NavLink>}
           {!props.isLoggedIn() &&
             !props.loading &&
@@ -73,7 +77,8 @@ const Header = props =>
         </div>
       </Nav>
     </Inner>
-  </Wrapper>;
+  </Wrapper>
+);
 
 Header.propTypes = {
   user: PropTypes.object,

@@ -5,6 +5,7 @@ import Callback from "./Callback";
 import DrawingsListWithData from "./DrawingsListWithData";
 import UserDrawings from "./UserDrawings";
 import AddDrawing from "./AddDrawing";
+import Gallery from "./Gallery";
 import NotFound from "./NotFound";
 import DrawingDetails from "./DrawingDetails";
 import CreateUser from "./CreateUser";
@@ -70,45 +71,51 @@ class App extends Component {
             {this.props.data.loading && <Loader />}
             {!this.props.data.loading &&
               <Switch>
+                <Route exact path="/" component={Gallery} />
                 <Route
                   exact
-                  path="/"
-                  render={props =>
+                  path="/draw"
+                  render={props => (
                     <DrawingsListWithData
                       {...props}
                       isLoggedIn={this.isLoggedIn}
-                    />}
+                    />
+                  )}
                 />
                 <Route
                   exact
                   path="/account/drawings"
-                  render={props =>
+                  render={props => (
                     <UserDrawings
                       {...props}
                       isLoggedIn={this.isLoggedIn}
                       user={this.props.data.user}
-                    />}
+                    />
+                  )}
                 />
                 <Route exact path="/callback" component={Callback} />
                 <Route
                   exact
                   path="/signup"
-                  render={props =>
+                  render={props => (
                     <CreateUser
                       {...props}
                       user={this.props.data.user}
                       refetchUser={this.refetchUser}
-                    />}
+                    />
+                  )}
                 />
                 <Route
                   path="/new"
-                  render={props =>
-                    <AddDrawing {...props} user={this.props.data.user} />}
+                  render={props => (
+                    <AddDrawing {...props} user={this.props.data.user} />
+                  )}
                 />
                 <Route
                   path="/drawing/:drawingId"
-                  render={props =>
-                    <DrawingDetails {...props} user={this.props.data.user} />}
+                  render={props => (
+                    <DrawingDetails {...props} user={this.props.data.user} />
+                  )}
                 />
                 <Route component={NotFound} />
               </Switch>}

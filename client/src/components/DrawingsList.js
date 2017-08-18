@@ -10,12 +10,20 @@ const DrawingLink = styled(Link)`
   text-decoration: none;
   margin-bottom: 0.5rem;
   color: inherit;
+  
   & .name {
-    color: #FC8A15;
+    transition: all 0.4s;
+    color: #222;
+    display: inline-block;
+    line-height: 0.5;
+    border-bottom: 4px solid #9ED0E0;
     font-size: 1.25rem;
   }
   & .created {
     color: #909090;
+  }
+  &:hover .name {
+    border-bottom: 4px solid #9ED0E0;
   }
 `;
 

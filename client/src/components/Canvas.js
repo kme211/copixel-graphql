@@ -24,6 +24,7 @@ class Canvas extends Component {
   }
 
   updateCanvas() {
+    console.log("updateCanvase");
     performance.mark("startUpdateCanvas");
     let {
       embed,
@@ -99,7 +100,7 @@ class Canvas extends Component {
     if (embedWidth) {
       scale = embedWidth / width;
     }
-
+    console.log("pixels", pixels);
     return (
       <canvas
         ref={canvas => {

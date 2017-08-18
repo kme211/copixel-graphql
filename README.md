@@ -4,6 +4,7 @@
 - User Drawings doesn't refetch right away when you remount the component. refetches after 5 seconds
 - Loading spinners need to be changed to something more pixel based
 - Error messages need to be fancier
+- Style 404 page
 
 ## auth resources
 https://github.com/graphcool-examples/react-graphql

@@ -1,10 +1,10 @@
 import React from "react";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import Icon from "./Icon";
 import { BRUSH, ERASER, EYE_DROPPER, PAINT_BUCKET } from "../constants";
 
 const Wrapper = styled.div`
-  background: #D8DFE2;
+  background: #d8dfe2;
   padding: 10px;
   display: flex;
   justify-content: space-around;
@@ -14,13 +14,11 @@ const Wrapper = styled.div`
   }
 `;
 
-const styles = ({ active }) => css`
+const Tool = styled.div`
   cursor: pointer;
   padding: 6px;
-  background: ${active ? "#FC8A15" : "transparent"};
+  background: ${props => (props.active ? "#FC8A15" : "transparent")};
 `;
-
-const Tool = styled.div`${styles}`;
 
 const ColorPicker = styled.input`
   width: 30px;
@@ -37,10 +35,11 @@ const ToolBar = ({
   toggleGrid,
   updateTool,
   updateColor
-}) => (
+}) =>
   <Wrapper>
     <Tool>
       <ColorPicker
+        title="color picker"
         type="color"
         name="Color"
         value={currentColor}
@@ -50,6 +49,7 @@ const ToolBar = ({
       />
     </Tool>
     <Tool
+      title="pencil"
       active={currentTool === BRUSH}
       data-tool={BRUSH}
       onClick={e => {
@@ -59,6 +59,7 @@ const ToolBar = ({
       <Icon icon="pencil" />
     </Tool>
     <Tool
+      title="eraser"
       active={currentTool === ERASER}
       data-tool={ERASER}
       onClick={e => {
@@ -68,6 +69,7 @@ const ToolBar = ({
       <Icon icon="eraser" />
     </Tool>
     <Tool
+      title="eye dropper"
       active={currentTool === EYE_DROPPER}
       data-tool={EYE_DROPPER}
       onClick={e => {
@@ -77,6 +79,7 @@ const ToolBar = ({
       <Icon icon="eyedropper" />
     </Tool>
     <Tool
+      title="paint bucket"
       active={currentTool === PAINT_BUCKET}
       data-tool={PAINT_BUCKET}
       onClick={e => {
@@ -85,10 +88,12 @@ const ToolBar = ({
     >
       <Icon icon="droplet" />
     </Tool>
-    <Tool onClick={toggleGrid}>
+    <Tool
+      title={isGridOn ? "turn grid off" : "turn grid on"}
+      onClick={toggleGrid}
+    >
       <Icon icon={isGridOn ? "grid_off" : "grid_on"} />
     </Tool>
-  </Wrapper>
-);
+  </Wrapper>;
 
 export default ToolBar;

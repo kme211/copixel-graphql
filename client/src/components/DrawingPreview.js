@@ -2,7 +2,7 @@ import React from "react";
 import { gql, graphql } from "react-apollo";
 import styled from "styled-components";
 import Wrapper from "./DrawingDetailWrapper";
-import LoadingSpinner from "./LoadingSpinner";
+import Loader from "./Loader";
 import MessagesHeaderButton from "./MessagesHeaderButton";
 
 const NameWrapper = styled.div`
@@ -24,7 +24,7 @@ const MessagesWrapper = styled.div`
 
 const DrawingPreview = ({ data: { loading, error, drawing } }) => {
   if (loading) {
-    return <LoadingSpinner />;
+    return <Loader />;
   }
   if (error) {
     return (

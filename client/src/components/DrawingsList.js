@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { getPrettyDate } from "../utils/dateUtils";
-import LoadingSpinner from "./LoadingSpinner";
+import Loader from "./Loader";
 
 const DrawingLink = styled(Link)`
   display: block;
@@ -31,7 +31,7 @@ const DrawingsList = ({
   user
 }) => {
   if (!drawings && loading) {
-    return <LoadingSpinner />;
+    return <Loader />;
   }
   if (error) {
     return (

@@ -11,7 +11,7 @@ import CreateUser from "./CreateUser";
 import Inner from "./Inner";
 import Header from "./Header";
 import { gql, graphql } from "react-apollo";
-import LoadingSpinner from "./LoadingSpinner";
+import Loader from "./Loader";
 import { isTokenExpired } from "../utils/jwtHelper";
 
 const Wrapper = styled.div`
@@ -67,7 +67,7 @@ class App extends Component {
             refetchUser={this.refetchUser}
           />
           <StyledInner>
-            {this.props.data.loading && <LoadingSpinner />}
+            {this.props.data.loading && <Loader />}
             {!this.props.data.loading &&
               <Switch>
                 <Route

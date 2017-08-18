@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import moment from "moment-timezone";
 import { getPrettyDate } from "../utils/dateUtils";
-import LoadingSpinner from "./LoadingSpinner";
+import Loader from "./Loader";
 
 const DrawingLink = styled(Link)`
   display: block;
@@ -32,7 +32,7 @@ const DrawingsList = ({
   user
 }) => {
   if (!drawings && loading) {
-    return <LoadingSpinner />;
+    return <Loader />;
   }
   if (error) {
     return (
@@ -84,7 +84,8 @@ const DrawingsList = ({
               </div>
               <div className="left">
                 {numSectionsAvailable > 0
-                  ? `${numSectionsAvailable} section${numSectionsAvailable > 1 && "s"} available`
+                  ? `${numSectionsAvailable} section${numSectionsAvailable >
+                      1 && "s"} available`
                   : "Complete!"}
               </div>
               <div className="created">

@@ -1,7 +1,7 @@
 import React from "react";
 import { gql, graphql } from "react-apollo";
 import DrawingsList from "./DrawingsList";
-import LoadingSpinner from "./LoadingSpinner";
+import Loader from "./Loader";
 
 export const drawingsListQuery = gql`
   query DrawingsListQuery {
@@ -25,7 +25,7 @@ const UserDrawings = ({ isLoggedIn, user }) => {
   }
 
   if (!user) {
-    return <LoadingSpinner />;
+    return <Loader />;
   }
 
   return <UserDrawingsWithData isLoggedIn={isLoggedIn} user={user} />;

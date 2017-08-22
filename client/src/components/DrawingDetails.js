@@ -183,6 +183,7 @@ class DrawingDetails extends Component {
     if (loading) {
       return <DrawingPreview drawingId={match.params.drawingId} />;
     }
+
     if (error) {
       return (
         <p>
@@ -190,6 +191,7 @@ class DrawingDetails extends Component {
         </p>
       );
     }
+
     if (!drawing) {
       return <NotFound />;
     }

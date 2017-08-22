@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Wrapper from "./DrawingDetailWrapper";
 import Loader from "./Loader";
 import MessagesHeaderButton from "./MessagesHeaderButton";
+import NotFound from "./NotFound";
 
 const NameWrapper = styled.div`
   font-size: 4vw;
@@ -26,12 +27,17 @@ const DrawingPreview = ({ data: { loading, error, drawing } }) => {
   if (loading) {
     return <Loader />;
   }
+
   if (error) {
     return (
       <Wrapper>
         {error.message}
       </Wrapper>
     );
+  }
+
+  if (!drawing) {
+    return <NotFound />;
   }
 
   return (

@@ -29,9 +29,12 @@ export const resolvers = {
     drawing: async (root, { id }) => {
       console.log("get drawing", id);
 
-      const drawing = await Drawing.findById(id);
-      if (!drawing) throw new Error("drawing not found");
-      return drawing;
+      try {
+        const drawing = await Drawing.findById(id);
+        return drawing;
+      } catch (e) {
+        return null;
+      }
     },
     neighbors: async (root, { drawingId, sectionX, sectionY }) => {
       console.log("getSectionNeighbors", sectionX, sectionY);

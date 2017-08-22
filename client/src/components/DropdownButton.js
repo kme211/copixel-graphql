@@ -19,8 +19,8 @@ const Children = styled.ul`
   top: 2.5rem;
   width: 150px;
   list-style-type: none;
-  background-color: #ccc;
-  color: #222;
+  background-color: #222;
+  color: white;
   visibility: hidden;
   transform: scale(0.1);
   transition: transform 0.25s cubic-bezier(0.2, 2, 1, 1);
@@ -62,11 +62,14 @@ class DropdownButton extends Component {
           <Icon icon="up-arrow" className="icon" />
         </button>
         <Children className={this.state.open ? "open" : "closed"}>
-          {this.props.children.map((child, i) =>
-            <li key={`dropdown-${this.props.label}-${i}`} onClick={this.toggleOpen}>
+          {this.props.children.map((child, i) => (
+            <li
+              key={`dropdown-${this.props.label}-${i}`}
+              onClick={this.toggleOpen}
+            >
               {child}
             </li>
-          )}
+          ))}
         </Children>
       </Wrapper>
     );

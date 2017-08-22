@@ -30,7 +30,7 @@ class SectionOverlay extends Component {
 
     const { data: { loading, error, neighbors }, section } = this.props;
     if (loading) return <div>Loading section data...</div>;
-    if (error) return <div>GraphQL Error: {error.message}</div>;
+    if (error) return <div>{error.message}</div>;
     console.log("SectionOverlay data", this.props.data);
     return (
       <div>

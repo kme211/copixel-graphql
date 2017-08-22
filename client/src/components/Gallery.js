@@ -22,7 +22,9 @@ text-decoration: none;
 
 const getEmbedWidth = () => {
   const width = window.innerWidth;
-  return width > 800 ? 800 : width - 16;
+  const baseFontSize = 16;
+  const borderWidth = 2;
+  return width > 800 ? 800 : width - (baseFontSize + borderWidth) * 2;
 };
 
 const getPixels = drawing => {

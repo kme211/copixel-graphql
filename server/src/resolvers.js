@@ -11,11 +11,8 @@ export const resolvers = {
       console.log("getUser", root, user);
       return user && user.username ? user : null;
     },
-    drawings: async (
-      root,
-      { status, public: isPublic, belongsToUser },
-      { user }
-    ) => {
+    drawings: async (root, args, { user }) => {
+      const { status, public: isPublic, belongsToUser, offset, limit } = args;
       const queryOptions = {};
       if (status !== undefined) queryOptions.status = status;
       if (isPublic !== undefined) queryOptions.public = isPublic;
@@ -23,7 +20,10 @@ export const resolvers = {
         queryOptions.participants = {
           $in: [user._id]
         };
-      const drawings = await Drawing.find(queryOptions).sort({ created: -1 });
+      const drawings = await Drawing.find(queryOptions)
+        .skip(offset)
+        .limit(limit)
+        .sort({ created: -1 });
       return drawings;
     },
     drawing: async (root, { id }) => {

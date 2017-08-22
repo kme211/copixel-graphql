@@ -58,6 +58,7 @@ const Header = props => (
         <Link to="/">copixel</Link>
 
         <div>
+          <NavLink to="/gallery" activeStyle={activeStyle}>gallery</NavLink>
           {props.isLoggedIn() &&
             <NavLink to="/new" activeStyle={activeStyle}>
               new

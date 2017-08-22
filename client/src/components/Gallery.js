@@ -83,7 +83,7 @@ class Gallery extends Component {
 
 export const drawingsListQuery = gql`
   query DrawingsListQuery {
-    drawings(status: COMPLETED, public: true) {
+    drawings(status: COMPLETED, public: true, limit: 2, offset: 0) {
       id
       width
       height

@@ -72,6 +72,7 @@ class App extends Component {
             {!this.props.data.loading &&
               <Switch>
                 <Route exact path="/" component={Gallery} />
+                <Route exact path="/gallery" component={Gallery} />
                 <Route
                   exact
                   path="/draw"

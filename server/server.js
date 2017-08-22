@@ -2,6 +2,7 @@ require("dotenv").config();
 import express from "express";
 import { graphqlExpress, graphiqlExpress } from "graphql-server-express";
 import bodyParser from "body-parser";
+import compression from "compression";
 import cors from "cors";
 import mongoose from "mongoose";
 import "./src/models";
@@ -18,6 +19,7 @@ const User = mongoose.model("User");
 const PORT = 4000;
 const server = express();
 
+server.use(compression());
 server.use("*", cors({ origin: "*" }));
 
 const jwtCheck = jwt({

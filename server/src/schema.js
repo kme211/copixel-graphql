@@ -20,6 +20,7 @@ type Drawing {
   sectionSizePx: Int!
   created: String
   sections: [Section]
+  numTotalSections: Int
   sectionsNotStarted: Int
   status: DRAWING_STATUS
   messages: [Message]!

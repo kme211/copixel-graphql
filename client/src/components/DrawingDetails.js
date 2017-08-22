@@ -9,12 +9,12 @@ import Button from "./Button";
 import Cover from "./ModalCover";
 import Body from "./ModalBody";
 import MessagesContainer from "./MessagesContainer";
-import { gql, graphql, compose } from "react-apollo";
+import { gql, graphql } from "react-apollo";
 import getCellSize from "../utils/getOptimalCellSize";
 import CompleteDrawing from "./CompleteDrawing";
+import AddSection from "./AddSection";
 import { Motion, StaggeredMotion, spring } from "react-motion";
 import Push from "push.js";
-import getTimestamp from "../utils/getTimestamp";
 import Wrapper from "./DrawingDetailWrapper";
 
 const BoardContainer = styled.div`
@@ -36,6 +36,7 @@ class DrawingDetails extends Component {
 
   state = {
     currentSection: null,
+    addSection: null,
     showDrawing: false,
     showMessages: true
   };
@@ -80,12 +81,35 @@ class DrawingDetails extends Component {
 
         const sectionUpdated = subscriptionData.data.sectionUpdated;
         console.log("Section updated", sectionUpdated);
+        const updatedSections = [
+          ...prev.drawing.sections.filter(s => s.id !== sectionUpdated.id),
+          sectionUpdated
+        ];
+
+        const numCompletedSections = updatedSections.filter(
+          section => section.status === "COMPLETED"
+        ).length;
+        const numSectionsLeft =
+          this.props.data.drawing.numTotalSections - numCompletedSections;
+
+        let sectionsLeftMessage;
+        switch (numSectionsLeft) {
+          case 0:
+            sectionsLeftMessage = "The drawing is complete!";
+            break;
+          case 1:
+            sectionsLeftMessage = "There is only 1 section left to complete!";
+            break;
+          default:
+            sectionsLeftMessage = `There are ${numSectionsLeft} sections left to complete.`;
+        }
+
         if (
           sectionUpdated.status === "COMPLETED" &&
           sectionUpdated.creator._id !== this.props.user._id
         ) {
           Push.create("copixel", {
-            body: "A user has completed a section",
+            body: `${sectionUpdated.creator.username} has completed a section! ${sectionsLeftMessage}`,
             icon: "/icons/smile.png",
             timeout: 6000,
             onClick: function() {
@@ -97,10 +121,7 @@ class DrawingDetails extends Component {
 
         return Object.assign({}, prev, {
           drawing: Object.assign({}, prev.drawing, {
-            sections: [
-              ...prev.drawing.sections.filter(s => s.id !== sectionUpdated.id),
-              sectionUpdated
-            ]
+            sections: updatedSections
           })
         });
       }
@@ -116,17 +137,22 @@ class DrawingDetails extends Component {
       this.setState({ currentSection: { x, y, id: section.id } });
       return;
     }
-    const { data: { addSection } } = await this.props.addSectionMutation({
-      variables: {
-        section: {
-          drawing: this.props.match.params.drawingId,
-          x,
-          y,
-          created: getTimestamp()
-        }
+
+    this.setState({
+      addSection: {
+        x,
+        y,
+        drawing: this.props.match.params.drawingId
       }
     });
-    this.setState({ currentSection: { x, y, id: addSection.id } });
+  };
+
+  closeAddSectionModal = () => {
+    this.setState({ addSection: null });
+  };
+
+  onSectionAdded = (x, y, id) => {
+    this.setState({ addSection: null, currentSection: { x, y, id } });
   };
 
   onSectionSave = () => {
@@ -275,16 +301,25 @@ class DrawingDetails extends Component {
           )}
         </Motion>
 
-        {this.state.currentSection &&
+        {(this.state.addSection || this.state.currentSection) &&
           <Cover>
             <Body>
-              <SectionOverlay
-                section={this.state.currentSection}
-                sectionSizePx={drawing.sectionSizePx}
-                pixelSize={drawing.pixelSize}
-                drawingId={match.params.drawingId}
-                onSectionSave={this.onSectionSave}
-              />
+              {this.state.addSection &&
+                <AddSection
+                  x={this.state.addSection.x}
+                  y={this.state.addSection.y}
+                  drawing={this.state.addSection.drawing}
+                  onSectionAdded={this.onSectionAdded}
+                  closeModal={this.closeAddSectionModal}
+                />}
+              {this.state.currentSection &&
+                <SectionOverlay
+                  section={this.state.currentSection}
+                  sectionSizePx={drawing.sectionSizePx}
+                  pixelSize={drawing.pixelSize}
+                  drawingId={match.params.drawingId}
+                  onSectionSave={this.onSectionSave}
+                />}
             </Body>
           </Cover>}
       </Wrapper>
@@ -301,6 +336,7 @@ export const drawingDetailsQuery = gql`
       height
       sectionSizePx
       pixelSize
+      numTotalSections
       sections {
         id
         x
@@ -344,28 +380,14 @@ const sectionsSubscription = gql`
       status
       creator {
         _id
+        username
       }
     }
   }
 `;
 
-const addSectionMutation = gql`
-  mutation addSection($section: SectionInput!) {
-    addSection(section: $section) {
-      x
-      y
-      id
-    }
-  }
-`;
-
-export default compose(
-  graphql(drawingDetailsQuery, {
-    options: props => ({
-      variables: { drawingId: props.match.params.drawingId }
-    })
-  }),
-  graphql(addSectionMutation, {
-    name: "addSectionMutation"
+export default graphql(drawingDetailsQuery, {
+  options: props => ({
+    variables: { drawingId: props.match.params.drawingId }
   })
-)(DrawingDetails);
+})(DrawingDetails);

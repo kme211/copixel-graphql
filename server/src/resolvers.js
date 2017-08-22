@@ -81,8 +81,17 @@ export const resolvers = {
     addSection: async (root, { section: options }, { user }) => {
       console.log("addSection", options);
 
-      // TODO: Check if section already exists
+      // Check if section already exists
       // Throw error if it does
+      const sectionInDb = await Section.findOne({
+        drawing: options.drawing,
+        x: options.x,
+        y: options.y
+      });
+      if (sectionInDb) {
+        throw new Error("Section already exists.");
+      }
+
       const section = await new Section(
         Object.assign({}, options, {
           status: "IN_PROGRESS",

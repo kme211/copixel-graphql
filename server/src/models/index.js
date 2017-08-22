@@ -81,6 +81,10 @@ drawingSchema.virtual("sections", {
   foreignField: "drawing"
 });
 
+drawingSchema.virtual("numTotalSections").get(function() {
+  return this.height * this.width;
+});
+
 drawingSchema.virtual("sectionsNotStarted").get(function() {
   const numTotalSections = this.height * this.width;
   return numTotalSections - this.sections.length;

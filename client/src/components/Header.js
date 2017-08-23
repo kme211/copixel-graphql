@@ -6,6 +6,10 @@ import Inner from "./Inner";
 import LoginButton from "./LoginButton";
 import DropdownButton from "./DropdownButton";
 
+const StyledInner = styled(Inner)`
+  padding: 0;
+`;
+
 const Nav = styled.nav`
   display: flex;
   justify-content: space-between;
@@ -13,7 +17,8 @@ const Nav = styled.nav`
 `;
 
 const activeStyle = {
-  color: "#9ED0E0"
+  color: "#9ED0E0",
+  background: "#333"
 };
 
 const Wrapper = styled.div`
@@ -25,8 +30,9 @@ const Wrapper = styled.div`
   font-size: 1rem;
   color: #eee;
 
-
   & a, .menu-item {
+    padding: 1rem;
+    line-height: 1;
     display: block;
     text-decoration: none;
     outline: none;
@@ -35,9 +41,12 @@ const Wrapper = styled.div`
     font-family: inherit;
     background: transparent;
     color: white;
-    margin-right: 1rem;
     cursor: pointer;
     transition: color 0.4s;
+  }
+
+  & a:hover, .menu-item:hover {
+    background: #333;
   }
 
   & .menu > .items {
@@ -99,7 +108,7 @@ class Header extends Component {
     const menuClassName = `menu  ${this.state.menuVisible && "isOpen"}`;
     return (
       <Wrapper>
-        <Inner>
+        <StyledInner>
           <Nav>
             <Link to="/">copixel</Link>
 
@@ -156,7 +165,7 @@ class Header extends Component {
               </div>
             </div>
           </Nav>
-        </Inner>
+        </StyledInner>
       </Wrapper>
     );
   }

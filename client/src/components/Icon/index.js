@@ -6,7 +6,7 @@ const styles = ({ size, color }) => css`
   width: ${size ? size / 16 + "rem" : "1em"};
   height: ${size ? size / 16 + "rem" : "1em"};
   box-sizing: border-box;
-  margin: ${size ? size / 160 + "rem" : "0.1em"};
+  margin: 0 ${size ? size / 160 + "rem" : "0.1em"};
   vertical-align: middle;
   color: ${color || "inherit"};
   & > svg {

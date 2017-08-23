@@ -17,13 +17,11 @@ const Wrapper = styled.div`
 `;
 
 const Children = styled.ul`
-  
   list-style-type: none;
   background-color: #222;
   color: white;
   display: none;
   width: 100%;
-  transition: transform 0.25s cubic-bezier(0.2, 2, 1, 1);
   text-align: left;
   & > li > * {
     text-align: inherit;
@@ -39,14 +37,15 @@ const Children = styled.ul`
   &.open {
     display: block;
   }
-  
 
   @media (min-width: 360px) {
+    display: block;
     position: absolute;
     z-index: 10;
     right: 0;
-    top: 2.5rem;
+    top: 3.25rem;
     width: 150px;
+    transition: transform 0.25s cubic-bezier(0.2, 2, 1, 1);
     visibility: hidden;
     transform: scale(0.1);
 

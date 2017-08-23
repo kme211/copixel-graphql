@@ -20,7 +20,7 @@ class CompleteDrawing extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { data: { loading, error, drawing } } = nextProps;
-    if (loading || error || !drawing) return;
+    if (loading || error || !drawing || drawing.imageUrl) return;
     this.setPixels(drawing);
   }
 
@@ -38,6 +38,16 @@ class CompleteDrawing extends Component {
     }
 
     const { embedWidth, style, data: { drawing } } = this.props;
+
+    if (drawing.imageUrl) {
+      return (
+        <img
+          src={drawing.imageUrl}
+          style={Object.assign({}, style, { maxWidth: "100%" })}
+          alt={drawing.name}
+        />
+      );
+    }
     const width = drawing.width * drawing.sectionSizePx;
     const height = drawing.height * drawing.sectionSizePx;
 
@@ -70,6 +80,7 @@ export const drawingDetailsQuery = gql`
       height
       pixelSize
       sectionSizePx
+      imageUrl
       sections {
         id
         x

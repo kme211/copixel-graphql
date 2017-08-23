@@ -6,6 +6,7 @@ import fs from "fs";
 import { promisify } from "util";
 mongoose.Promise = global.Promise;
 const Drawing = mongoose.model("Drawing");
+const Section = mongoose.model("Section");
 const TEMP_IMAGES_DIR = "images";
 
 const {
@@ -55,6 +56,14 @@ async function takeScreenshot(drawing) {
   return tempImagePath;
 }
 
+async function removePixels(sectionId) {
+  console.log("removing pixels from section with id", sectionId);
+  const section = await Section.findById(sectionId);
+  console.log("section", section);
+  section.pixels = undefined;
+  return section.save();
+}
+
 export default async function checkStatus(drawingId, callback) {
   console.log("checkStatus job starting...");
   try {
@@ -71,8 +80,14 @@ export default async function checkStatus(drawingId, callback) {
       console.log("tempImagePath", tempImagePath);
       const { secure_url } = await uploadDrawing(tempImagePath);
       console.log("secure_url", secure_url);
+      const promises = drawing.sections.map(section =>
+        removePixels(section._id)
+      );
+      await Promise.all(promises);
+      console.log("pixels removed from all sections");
       drawing.imageUrl = secure_url;
       await drawing.save();
+      console.log("drawing saved");
       await removeTempImage(tempImagePath);
       callback(null, { drawingId, status: drawing.status });
     } else {

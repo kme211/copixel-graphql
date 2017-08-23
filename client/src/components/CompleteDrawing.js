@@ -37,24 +37,25 @@ class CompleteDrawing extends Component {
       );
     }
 
-    const {
-      embedWidth,
-      width,
-      height,
-      pixelSize,
-      sectionSizePx,
-      style
-    } = this.props;
+    const { embedWidth, style, data: { drawing } } = this.props;
+    const width = drawing.width * drawing.sectionSizePx;
+    const height = drawing.height * drawing.sectionSizePx;
 
     return (
       <Canvas
         embed
-        style={style}
-        embedWidth={embedWidth}
+        style={
+          style || {
+            position: "absolute",
+            top: 0,
+            left: 0
+          }
+        }
+        embedWidth={embedWidth || window.innerWidth}
         width={width}
         height={height}
-        pixelSize={pixelSize}
-        sectionSizePx={sectionSizePx}
+        pixelSize={drawing.pixelSize}
+        sectionSizePx={drawing.sectionSizePx}
         pixels={this.pixels}
       />
     );
@@ -65,6 +66,10 @@ export const drawingDetailsQuery = gql`
   query DrawingDetailsQuery($drawingId: ID!) {
     drawing(id: $drawingId) {
       id
+      width
+      height
+      pixelSize
+      sectionSizePx
       sections {
         id
         x

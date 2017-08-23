@@ -62,17 +62,16 @@ class Gallery extends Component {
     return (
       <Drawings>
         {drawings.map(drawing => {
+          const url = drawing.imageUrl.replace(
+            /(upload\/)(\w+)/,
+            (match, p1, p2) => {
+              return `${p1}w_800/f_auto,q_auto/${p2}`;
+            }
+          );
+          console.log("url", url);
           return (
             <DrawingLink to={`/drawing/${drawing.id}`} key={drawing.id}>
-              <Canvas
-                embed
-                embedWidth={getEmbedWidth()}
-                sectionSizePx={drawing.sectionSizePx}
-                pixelSize={drawing.pixelSize}
-                width={drawing.width * drawing.sectionSizePx}
-                height={drawing.height * drawing.sectionSizePx}
-                pixels={getPixels(drawing)}
-              />
+              <img src={url} alt={drawing.name} />
             </DrawingLink>
           );
         })}
@@ -83,21 +82,10 @@ class Gallery extends Component {
 
 export const drawingsListQuery = gql`
   query DrawingsListQuery {
-    drawings(status: COMPLETED, public: true, limit: 2, offset: 0) {
+    drawings(status: COMPLETED, public: true, limit: 10, offset: 0) {
       id
-      width
-      height
-      sectionSizePx
-      pixelSize
-      sections {
-        x
-        y
-        pixels {
-          color
-          x
-          y
-        }
-      }
+      name
+      imageUrl
     }
   }
 `;

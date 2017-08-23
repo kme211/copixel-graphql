@@ -261,10 +261,6 @@ class DrawingDetails extends Component {
                         {drawingIsComplete &&
                           <CompleteDrawing
                             drawingId={drawing.id}
-                            width={drawing.width * drawing.sectionSizePx}
-                            height={drawing.height * drawing.sectionSizePx}
-                            pixelSize={drawing.pixelSize}
-                            sectionSizePx={drawing.sectionSizePx}
                             embedWidth={
                               getCellSize(
                                 drawing.width,

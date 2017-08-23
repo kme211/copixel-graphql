@@ -16,6 +16,7 @@ type Drawing {
   width: Int!
   height: Int!
   public: Boolean!
+  imageUrl: String
   pixelSize: Int!
   sectionSizePx: Int!
   created: String

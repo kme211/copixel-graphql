@@ -76,6 +76,7 @@ class Canvas extends Component {
         ctx.fillRect(x, y, blockSize, blockSize);
       }
     }
+    window.canvasReady = true;
     performance.mark("endUpdateCanvas");
     performance.measure(
       "durationUpdateCanvas",
@@ -108,6 +109,7 @@ class Canvas extends Component {
         }}
         width={width * scale}
         height={height * scale}
+        id="drawing"
         {...props}
       />
     );

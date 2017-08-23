@@ -57,6 +57,9 @@ const drawingSchema = new Schema({
     type: String,
     default: "IN_PROGRESS"
   },
+  imageUrl: {
+    type: String
+  },
   height: {
     type: Number,
     min: 1,

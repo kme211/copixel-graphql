@@ -8,6 +8,7 @@ import AddDrawing from "./AddDrawing";
 import Gallery from "./Gallery";
 import NotFound from "./NotFound";
 import DrawingDetails from "./DrawingDetails";
+import CompleteDrawing from "./CompleteDrawing";
 import CreateUser from "./CreateUser";
 import Inner from "./Inner";
 import Header from "./Header";
@@ -118,6 +119,10 @@ class App extends Component {
                     <DrawingDetails {...props} user={this.props.data.user} />
                   )}
                 />
+                <Route
+                  path="/canvas/:drawingId" render={props => (
+                    <CompleteDrawing {...props} drawingId={props.match.params.drawingId}/>
+                  )}/>
                 <Route component={NotFound} />
               </Switch>}
           </StyledInner>

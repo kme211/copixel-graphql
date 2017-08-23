@@ -1,5 +1,7 @@
 .env
 
+server/images/*.png
+
 # Logs
 logs
 *.log

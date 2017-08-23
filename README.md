@@ -15,6 +15,7 @@
 - Add prompt to add pixels to neighbor edges if no data found in those rows/columns
 - Update loading animtion to be more fun
 - Add way to report innapropriate drawings or add ratings
+- Add marketing type stuff to home page
 
 ## Auth resources
 - https://github.com/graphcool-examples/react-graphql

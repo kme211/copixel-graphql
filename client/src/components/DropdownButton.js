@@ -10,19 +10,19 @@ const Wrapper = styled.div`
   .icon {
     transform: rotate(180deg);
   }
+
+  @media (max-width: 360px) {
+    width: 100%;
+  }
 `;
 
 const Children = styled.ul`
-  position: absolute;
-  z-index: 10;
-  right: 0;
-  top: 2.5rem;
-  width: 150px;
+  
   list-style-type: none;
   background-color: #222;
   color: white;
-  visibility: hidden;
-  transform: scale(0.1);
+  display: none;
+  width: 100%;
   transition: transform 0.25s cubic-bezier(0.2, 2, 1, 1);
   text-align: left;
   & > li > * {
@@ -35,9 +35,25 @@ const Children = styled.ul`
       color: white;
     }
   }
+
   &.open {
-    visibility: visible;
-    transform: scale(1);
+    display: block;
+  }
+  
+
+  @media (min-width: 360px) {
+    position: absolute;
+    z-index: 10;
+    right: 0;
+    top: 2.5rem;
+    width: 150px;
+    visibility: hidden;
+    transform: scale(0.1);
+
+    &.open {
+      visibility: visible;
+      transform: scale(1);
+    }
   }
 `;
 
@@ -57,7 +73,7 @@ class DropdownButton extends Component {
   render() {
     return (
       <Wrapper>
-        <button onClick={this.toggleOpen}>
+        <button onClick={this.toggleOpen} className={this.props.className}>
           {this.props.label}
           <Icon icon="up-arrow" className="icon" />
         </button>

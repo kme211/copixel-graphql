@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
@@ -25,9 +25,9 @@ const Wrapper = styled.div`
   font-size: 1rem;
   color: #eee;
 
-  a,
-  button {
-    display: inline-block;
+
+  & a, .menu-item {
+    display: block;
     text-decoration: none;
     outline: none;
     border: none;
@@ -40,51 +40,126 @@ const Wrapper = styled.div`
     transition: color 0.4s;
   }
 
-  a:hover,
-  button:hover {
-    color: white;
+  & .menu > .items {
+    display: none;
   }
 
-  a:last-child,
-  button:last-child {
-    margin-right: 0;
+  & .menu.isOpen > .items {
+    display: block;
+    position: absolute;
+    top: 3rem;
+    background: #2b2b2b;
+    width: 100%;
+    left: 0;
+
+    & .menu-item {
+      padding: 0.5rem 1rem;
+    }
+  }
+
+  @media (min-width: 360px) {
+    & .menu-btn {
+      display: none;
+    }
+    & .items {
+      display: block !important;
+    }
+    & .menu .menu-item {
+      display: inline-block;
+    }
   }
 `;
 
-const Header = props => (
-  <Wrapper>
-    <Inner>
-      <Nav>
-        <Link to="/">copixel</Link>
+class Header extends Component {
+  static propTypes = {
+    user: PropTypes.object,
+    isLoggedIn: PropTypes.func.isRequired,
+    logout: PropTypes.func.isRequired
+  };
 
-        <div>
-          <NavLink to="/gallery" activeStyle={activeStyle}>gallery</NavLink>
-          {props.isLoggedIn() &&
-            <NavLink to="/new" activeStyle={activeStyle}>
-              new
-            </NavLink>}
-          {props.isLoggedIn() &&
-            <NavLink to="/draw" activeStyle={activeStyle}>
-              draw
-            </NavLink>}
-          {!props.isLoggedIn() &&
-            !props.loading &&
-            <LoginButton refetchUser={props.refetchUser} />}
-          {props.isLoggedIn() &&
-            <DropdownButton label={props.user.username}>
-              <Link to="/account/drawings">my drawings</Link>
-              <button onClick={props.logout}>logout</button>
-            </DropdownButton>}
-        </div>
-      </Nav>
-    </Inner>
-  </Wrapper>
-);
+  state = {
+    menuVisible: false
+  };
 
-Header.propTypes = {
-  user: PropTypes.object,
-  isLoggedIn: PropTypes.func.isRequired,
-  logout: PropTypes.func.isRequired
-};
+  componentDidMount() {
+    window.addEventListener("resize", this.onWindowResize);
+  }
+
+  onWindowResize = () => {
+    if (!this.state.menuVisible) return;
+    if (window.innerWidth > 360) this.setState({ menuVisible: false });
+  };
+
+  toggleMenuVisibility = () => {
+    this.setState(prevState => ({ menuVisible: !prevState.menuVisible }));
+  };
+
+  render() {
+    const isLoggedIn = this.props.isLoggedIn();
+    const menuClassName = `menu  ${this.state.menuVisible && "isOpen"}`;
+    return (
+      <Wrapper>
+        <Inner>
+          <Nav>
+            <Link to="/">copixel</Link>
+
+            <div className={menuClassName}>
+              <div className="menu-btn" onClick={this.toggleMenuVisibility}>
+                menu
+              </div>
+              <div className="items">
+                <NavLink
+                  className="menu-item"
+                  to="/gallery"
+                  activeStyle={activeStyle}
+                >
+                  gallery
+                </NavLink>
+                {isLoggedIn &&
+                  <NavLink
+                    className="menu-item"
+                    to="/new"
+                    activeStyle={activeStyle}
+                  >
+                    new
+                  </NavLink>}
+                {isLoggedIn &&
+                  <NavLink
+                    className="menu-item"
+                    to="/draw"
+                    activeStyle={activeStyle}
+                  >
+                    draw
+                  </NavLink>}
+                {!isLoggedIn &&
+                  !this.props.loading &&
+                  <LoginButton
+                    className="menu-item"
+                    refetchUser={this.props.refetchUser}
+                  />}
+                {isLoggedIn &&
+                  <DropdownButton
+                    className="menu-item"
+                    label={this.props.user.username}
+                  >
+                    <NavLink
+                      to="/account/drawings"
+                      className="menu-item"
+                      activeStyle={activeStyle}
+                    >
+                      my drawings
+                    </NavLink>
+                    <button onClick={this.props.logout} className="menu-item">
+                      logout
+                    </button>
+                  </DropdownButton>}
+              </div>
+            </div>
+          </Nav>
+        </Inner>
+      </Wrapper>
+    );
+  }
+}
 
 export default Header;

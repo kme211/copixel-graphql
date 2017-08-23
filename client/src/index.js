@@ -24,11 +24,13 @@ networkInterface.use([
         req.options.headers = {};
       }
       if (localStorage.getItem("auth0IdToken")) {
-        req.options.headers.authorization = `Bearer ${localStorage.getItem(
-          "auth0IdToken"
-        )}`;
+        req.options.headers.authorization = `Bearer ${localStorage.getItem("auth0IdToken")}`;
       }
-      setTimeout(next, 500);
+      if (process.env.NODE_ENV !== "production") {
+        setTimeout(next, 500);
+      } else {
+        next();
+      }
     }
   }
 ]);

@@ -59,7 +59,6 @@ async function takeScreenshot(drawing) {
 async function removePixels(sectionId) {
   console.log("removing pixels from section with id", sectionId);
   const section = await Section.findById(sectionId);
-  console.log("section", section);
   section.pixels = undefined;
   return section.save();
 }

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import "../models";
+import "../models/Drawing";
+import "../models/Section";
 import puppeteer from "puppeteer";
 import cloudinary from "cloudinary";
 import fs from "fs";

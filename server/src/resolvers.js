@@ -97,7 +97,6 @@ export const resolvers = {
 
       const section = await new Section(
         Object.assign({}, options, {
-          status: "IN_PROGRESS",
           creator: user._id
         })
       ).saveAndPopulate();

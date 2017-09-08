@@ -261,6 +261,7 @@ class DrawingDetails extends Component {
                         {drawingIsComplete &&
                           <CompleteDrawing
                             drawingId={drawing.id}
+                            location={this.props.location}
                             embedWidth={
                               getCellSize(
                                 drawing.width,

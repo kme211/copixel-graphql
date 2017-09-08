@@ -47,7 +47,9 @@ async function takeScreenshot(drawing) {
     width: width * scale,
     height: height * scale
   });
-  await page.goto(`http://localhost:7777/canvas/${drawing._id}`);
+  await page.goto(
+    `http://localhost:7777/drawing/${drawing._id}?fullscreen=true`
+  );
   const watchDog = page.waitForFunction("window.canvasReady");
   await watchDog;
   const tempImagePath = `${TEMP_IMAGES_DIR}/${drawing._id}.png`;

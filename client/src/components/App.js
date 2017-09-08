@@ -115,14 +115,21 @@ class App extends Component {
                 />
                 <Route
                   path="/drawing/:drawingId"
-                  render={props => (
-                    <DrawingDetails {...props} user={this.props.data.user} />
-                  )}
+                  render={props => {
+                    console.log(props.location.search);
+                    if (props.location.search.match("fullscreen")) {
+                      return (
+                        <CompleteDrawing
+                          {...props}
+                          drawingId={props.match.params.drawingId}
+                        />
+                      );
+                    }
+                    return (
+                      <DrawingDetails {...props} user={this.props.data.user} />
+                    );
+                  }}
                 />
-                <Route
-                  path="/canvas/:drawingId" render={props => (
-                    <CompleteDrawing {...props} drawingId={props.match.params.drawingId}/>
-                  )}/>
                 <Route component={NotFound} />
               </Switch>}
           </StyledInner>

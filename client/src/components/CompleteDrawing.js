@@ -1,8 +1,13 @@
 import React, { Component } from "react";
+import t from "prop-types";
 import { gql, graphql } from "react-apollo";
 import Canvas from "./Canvas";
 
 class CompleteDrawing extends Component {
+  static propTypes = {
+    location: t.object.isRequired,
+    style: t.object
+  };
   ready = false;
   pixels = {};
 
@@ -37,9 +42,15 @@ class CompleteDrawing extends Component {
       );
     }
 
-    const { embedWidth, style, data: { drawing } } = this.props;
+    const {
+      location: { search },
+      embedWidth,
+      style,
+      data: { drawing }
+    } = this.props;
+    const showFullscreen = !!search.match("fullscreen");
 
-    if (drawing.imageUrl) {
+    if (drawing.imageUrl && !showFullscreen) {
       return (
         <img
           src={drawing.imageUrl}
@@ -48,6 +59,13 @@ class CompleteDrawing extends Component {
         />
       );
     }
+
+    if (showFullscreen && drawing.imageUrl) {
+      return (
+        <div>Sorry, this image cannot be shown fullscreen any longer.</div>
+      );
+    }
+
     const width = drawing.width * drawing.sectionSizePx;
     const height = drawing.height * drawing.sectionSizePx;
 

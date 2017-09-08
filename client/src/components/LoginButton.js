@@ -37,7 +37,7 @@ class LoginButton extends Component {
   render() {
     return (
       <button onClick={this._showLogin} className={this.props.className}>
-        Log in
+        log in
       </button>
     );
   }

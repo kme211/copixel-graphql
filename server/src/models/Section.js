@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { autopopulate } from "./helpers";
 const Schema = mongoose.Schema;
 
 const sectionSchema = new Schema({

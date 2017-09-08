@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { autopopulate } from "./helpers";
 const Schema = mongoose.Schema;
 
 const drawingSchema = new Schema({
@@ -75,18 +76,6 @@ drawingSchema.virtual("messages", {
   localField: "_id",
   foreignField: "drawing"
 });
-
-function autopopulate(next) {
-  this.populate("sections messages");
-  next();
-}
-
-function autopopulate(fieldStr) {
-  return function(next) {
-    this.populate(fieldStr);
-    next();
-  };
-}
 
 const autopopulateDrawingSchema = autopopulate("sections messages");
 

@@ -52,6 +52,7 @@ async function takeScreenshot(drawing) {
   );
   const watchDog = page.waitForFunction("window.canvasReady");
   await watchDog;
+  if (!fs.existsSync(TEMP_IMAGES_DIR)) fs.mkdir(TEMP_IMAGES_DIR);
   const tempImagePath = `${TEMP_IMAGES_DIR}/${drawing._id}.png`;
   await page.screenshot({
     path: tempImagePath

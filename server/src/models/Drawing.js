@@ -87,22 +87,22 @@ drawingSchema.methods.getNeighborsOfSection = function(sectionX, sectionY) {
     {
       x: sectionX - 1,
       y: sectionY,
-      relativePosition: "LEFT"
+      relativePosition: ["LEFT"]
     },
     {
       x: sectionX + 1,
       y: sectionY,
-      relativePosition: "RIGHT"
+      relativePosition: ["RIGHT"]
     },
     {
       x: sectionX,
       y: sectionY - 1,
-      relativePosition: "TOP"
+      relativePosition: ["TOP"]
     },
     {
       x: sectionX,
       y: sectionY + 1,
-      relativePosition: "BOTTOM"
+      relativePosition: ["BOTTOM"]
     },
     {
       x: sectionX - 1,
@@ -125,7 +125,6 @@ drawingSchema.methods.getNeighborsOfSection = function(sectionX, sectionY) {
       relativePosition: ["BOTTOM", "RIGHT"]
     }
   ];
-
   // These filters are used to return only the pixels
   // that are on the edge of a neighboring section
   const filters = {
@@ -135,7 +134,7 @@ drawingSchema.methods.getNeighborsOfSection = function(sectionX, sectionY) {
     BOTTOM: pixel => pixel.y === (sectionY + 1) * this.sectionSizePx
   };
 
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < neighbors.length; i++) {
     let neighbor = neighbors[i];
     const outOfBounds =
       neighbor.x < 0 ||
@@ -152,36 +151,23 @@ drawingSchema.methods.getNeighborsOfSection = function(sectionX, sectionY) {
       s => s.x === neighbor.x && s.y === neighbor.y
     );
 
-    if (typeof neighbor.relativePosition === "string") {
-      const pos = neighbor.relativePosition;
-      console.log("pos", pos);
-      neighbors = [
-        ...neighbors.slice(0, i),
-        Object.assign({}, neighbor, {
-          pixels: result ? result.pixels.filter(filters[pos]) : []
-        }),
-        ...neighbors.slice(i + 1)
-      ];
-    } else {
-      const [pos1, pos2] = neighbor.relativePosition;
-      console.log(pos1, pos2);
-      neighbors = [
-        ...neighbors.slice(0, i),
-        Object.assign({}, neighbor, {
-          pixels: result && result.pixels
-            ? [result.pixels.find(p => filters[pos1](p) && filters[pos2](p))] // find that corner pixel!
+    const [pos1, pos2] = neighbor.relativePosition;
+    neighbors = [
+      ...neighbors.slice(0, i),
+      Object.assign({}, neighbor, {
+        pixels:
+          result && result.pixels
+            ? result.pixels.filter(p => {
+                if (!pos2) return filters[pos1](p);
+                else return filters[pos1](p) && filters[pos2](p); // find that corner pixel!
+              })
             : []
-        }),
-        ...neighbors.slice(i + 1)
-      ];
-    }
+      }),
+      ...neighbors.slice(i + 1)
+    ];
   }
 
   return neighbors.filter(n => n);
-  // return neighbors
-  //   .filter(n => n) // filter out null values
-  //   .reduce((a, b) => a.concat(b), []) // create single array
-  //   .map(n => n.pixels.map(p => Object.assign({}, p, { locked: true }))); // add locked prop to each pixel
 };
 
 export default mongoose.model("Drawing", drawingSchema);

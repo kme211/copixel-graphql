@@ -110,7 +110,7 @@ export const resolvers = {
       });
 
       queue.enqueue("addParticipant", { drawingId, userId: user._id }, () => {
-        console.log("addParticipant job done?");
+        console.log("addParticipant job enqueued");
       });
 
       return section;

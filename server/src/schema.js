@@ -91,7 +91,7 @@ type Message {
 type Neighbor {
   x: Int!
   y: Int!
-  relativePosition: String!
+  relativePosition: [String]!
   pixels: [Pixel]!
 }
 
